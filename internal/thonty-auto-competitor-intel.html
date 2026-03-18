@@ -34,14 +34,148 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
+    /* Animated pipeline arrows */
+    .pipeline-arrow {
+      animation: flow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes flow-pulse {
+      0%, 100% { color: rgba(6,182,212,0.25); }
+      50% { color: rgba(6,182,212,0.7); }
+    }
+
+    /* Gradient hero h2 */
+    .hero h2 {
+      background: linear-gradient(90deg, #06B6D4, #005DE0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Glowing pipeline hover */
+    .pipeline-step:hover {
+      border-color: #06B6D4;
+      box-shadow: 0 0 20px rgba(6,182,212,0.15);
+    }
+
+    /* Live dot */
+    .live-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+
+    /* Metric strip */
+    .metric-strip {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .metric-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .metric-card:hover {
+      border-color: #06B6D4;
+      transform: translateY(-2px);
+    }
+    .metric-num {
+      font-size: 36px;
+      font-weight: 800;
+      color: #06B6D4;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .metric-num.green { color: #22c55e; }
+    .metric-num.amber { color: #f59e0b; }
+    .metric-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Slack glow */
+    .slack-box {
+      border-left: 3px solid #22c55e;
+      animation: slack-glow 3s ease-in-out infinite;
+    }
+    @keyframes slack-glow {
+      0%, 100% { border-left-color: rgba(34,197,94,0.5); }
+      50% { border-left-color: rgba(34,197,94,1); }
+    }
+
+    /* Page nav */
+    .page-nav {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .pn-link {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+    .pn-link:hover {
+      border-color: #06B6D4;
+      transform: translateY(-2px);
+    }
+    .pn-dir { font-size: 11px; font-weight: 700; color: #06B6D4; letter-spacing: 0.5px; }
+    .pn-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .pn-home {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      flex-direction: row;
+      padding: 10px 16px;
+    }
+    .pn-home:hover { color: #fff; }
+
     /* ── NAV ── */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
       height: 52px;
-      background: rgba(6, 15, 30, 0.95);
-      backdrop-filter: blur(12px);
+      background: rgba(6, 15, 30, 0.92);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -110,7 +244,6 @@
     .hero h2 {
       font-size: 44px;
       font-weight: 800;
-      color: var(--blue);
       line-height: 1.1;
       letter-spacing: -0.02em;
       margin-bottom: 24px;
@@ -222,10 +355,8 @@
       padding: 24px 20px;
       text-align: center;
       position: relative;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .pipeline-step:hover { border-color: var(--blue); }
 
     .pipeline-step.slack-step {
       border-color: rgba(34, 197, 94, 0.3);
@@ -238,7 +369,6 @@
       display: flex;
       align-items: center;
       padding: 0 8px;
-      color: var(--muted);
       font-size: 20px;
       flex-shrink: 0;
     }
@@ -504,6 +634,8 @@
       nav .nav-centre { font-size: 12px; }
       .wrap { padding: 0 20px; }
       .slack-box { padding: 20px; }
+      .metric-strip { flex-direction: column; }
+      .page-nav { flex-direction: column; }
     }
   </style>
 </head>
@@ -512,7 +644,7 @@
   <!-- NAV -->
   <nav>
     <a href="thonty-automations-overview.html" class="nav-back">&larr; Back to Overview</a>
-    <span class="nav-centre">&#128202; Competitor Intelligence Deck</span>
+    <span class="nav-centre"><span class="live-dot"></span>&#128202; Competitor Intelligence Deck</span>
     <span class="nav-right">Online Optimisers</span>
   </nav>
 
@@ -593,6 +725,11 @@
           <div class="step-name">Airtable Log</div>
           <div class="step-sub">Link logged +<br>Slack notified</div>
         </div>
+      </div>
+      <div class="metric-strip">
+        <div class="metric-card"><div class="metric-num green">5 min</div><div class="metric-label">Deck generation</div></div>
+        <div class="metric-card"><div class="metric-num amber">$0.10</div><div class="metric-label">Cost per deck</div></div>
+        <div class="metric-card"><div class="metric-num">3x</div><div class="metric-label">Faster than manual</div></div>
       </div>
     </div>
   </section>
@@ -761,6 +898,19 @@
       </div>
     </div>
   </section>
+
+  <!-- PAGE NAV -->
+  <div class="page-nav">
+    <a href="thonty-auto-why-now.html" class="pn-link pn-prev">
+      <span class="pn-dir">&larr; Previous</span>
+      <span class="pn-name">"Why Now" Trigger Detector</span>
+    </a>
+    <a href="thonty-automations-overview.html" class="pn-link pn-home">All Automations</a>
+    <a href="thonty-auto-inbox-triage.html" class="pn-link pn-next">
+      <span class="pn-dir">Next &rarr;</span>
+      <span class="pn-name">Inbox Triage & Reply Drafter</span>
+    </a>
+  </div>
 
   <!-- FOOTER -->
   <footer>
