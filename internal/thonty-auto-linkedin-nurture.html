@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Nurture Sequencer — Thonty Automation</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --blue: #005DE0; --navy: #072F60; --accent: #1555FC; --bg: #060f1e; --surface: #0d1b2e; --surface2: #111f35; --border: #1a2d4a; --text: #e8edf4; --muted: #7a90aa; --green: #22c55e; --amber: #f59e0b; --red: #ef4444; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+nav { position: sticky; top: 0; z-index: 100; height: 52px; background: rgba(6, 15, 30, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+nav a.nav-back { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; transition: color 0.2s; white-space: nowrap; }
+nav a.nav-back:hover { color: var(--text); }
+nav .nav-centre { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+nav .nav-right { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; }
+.hero { width: 100%; padding: 100px 32px 90px; text-align: center; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 93, 224, 0.18) 0%, transparent 70%), linear-gradient(180deg, #060f1e 0%, #060f1e 100%); border-bottom: 1px solid var(--border); }
+.hero .pill { display: inline-block; background: rgba(0, 93, 224, 0.15); border: 1px solid rgba(0, 93, 224, 0.4); color: #5ba3ff; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 36px; }
+.hero h1 { font-size: 44px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 8px; }
+.hero h2 { font-size: 44px; font-weight: 800; color: var(--blue); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 24px; }
+.hero .subline { font-size: 18px; font-weight: 400; color: var(--muted); max-width: 560px; margin: 0 auto 60px; }
+.hero-stats { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+.hero-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.hero-stat .num { font-size: 36px; font-weight: 800; color: var(--blue); line-height: 1; }
+.hero-stat .label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 32px; }
+section { padding: 80px 0; }
+section + section { border-top: 1px solid var(--border); }
+.section-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+.section-title { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 32px; line-height: 1.2; }
+.data-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+.data-card p { font-size: 17px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+.data-card .bold-line { font-size: 18px; font-weight: 700; color: var(--text); }
+.pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 8px; }
+.pipeline-step { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 20px; text-align: center; position: relative; transition: border-color 0.2s; }
+.pipeline-step:hover { border-color: var(--blue); }
+.pipeline-step.slack-step { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.04); }
+.pipeline-step.slack-step:hover { border-color: var(--green); }
+.pipeline-arrow { display: flex; align-items: center; padding: 0 8px; color: var(--muted); font-size: 20px; flex-shrink: 0; }
+.pipeline-step .step-icon { font-size: 28px; margin-bottom: 10px; }
+.pipeline-step .step-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.pipeline-step .step-sub { font-size: 11px; font-weight: 500; color: var(--muted); line-height: 1.4; }
+.pipeline-step.slack-step .step-name { color: var(--green); }
+.slack-box { background: #1a1d21; border: 1px solid #2d3139; border-radius: 12px; padding: 28px 32px; font-family: 'Manrope', monospace; font-size: 13px; line-height: 1.7; color: #d1d5db; overflow-x: auto; }
+.slack-box .slack-header { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.slack-box .slack-meta { font-size: 12px; color: #6b7280; margin-bottom: 20px; border-bottom: 1px solid #2d3139; padding-bottom: 14px; }
+.slack-box .s-section { color: #5ba3ff; font-weight: 700; margin-top: 14px; margin-bottom: 4px; display: block; }
+.slack-box .s-green { color: var(--green); }
+.slack-box .s-amber { color: var(--amber); }
+.slack-box .s-red { color: var(--red); }
+.slack-box .s-muted { color: #6b7280; }
+.slack-box .indent { padding-left: 16px; border-left: 2px solid #2d3139; margin: 6px 0 10px; }
+.slack-caption { text-align: center; font-size: 14px; color: var(--muted); margin-top: 24px; font-weight: 500; }
+.before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.ba-panel { border-radius: 14px; padding: 32px; }
+.ba-panel.before { background: var(--surface); border: 1px solid var(--border); }
+.ba-panel.after { background: rgba(0, 93, 224, 0.08); border: 1px solid rgba(0, 93, 224, 0.3); }
+.ba-panel .ba-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; }
+.ba-panel.before .ba-label { color: var(--red); }
+.ba-panel.after .ba-label { color: var(--green); }
+.ba-panel .ba-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+.ba-panel .ba-body { font-size: 15px; color: var(--muted); line-height: 1.7; }
+.tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 18px; }
+.tool-card .tool-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.tool-card .tool-desc { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.tool-card .tool-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--green); background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 100px; padding: 3px 10px; margin-bottom: 4px; margin-right: 4px; }
+.tool-card .tool-price { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.cost-line { text-align: center; font-size: 16px; font-weight: 700; color: var(--green); }
+.build-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+.build-step { display: flex; align-items: flex-start; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; }
+.build-step .step-num { font-size: 28px; font-weight: 800; color: var(--blue); line-height: 1; min-width: 36px; }
+.build-step .step-content .step-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.build-step .step-content .step-body { font-size: 14px; color: var(--muted); }
+.cta-callout { background: var(--blue); border-radius: 14px; padding: 32px 40px; text-align: center; }
+.cta-callout p { font-size: 17px; font-weight: 600; color: #fff; line-height: 1.6; }
+footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; font-size: 13px; color: var(--muted); font-weight: 500; }
+@media (max-width: 768px) { .hero h1, .hero h2 { font-size: 32px; } .hero-stats { gap: 32px; } .pipeline { flex-direction: column; gap: 8px; } .pipeline-arrow { transform: rotate(90deg); } .tools-grid { grid-template-columns: repeat(2, 1fr); } .before-after { grid-template-columns: 1fr; } nav { padding: 0 16px; } nav .nav-centre { font-size: 12px; } .wrap { padding: 0 20px; } .slack-box { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="thonty-automations-overview.html" class="nav-back">&larr; Back to Overview</a>
+    <div class="nav-centre">&#x1F916; LinkedIn Nurture Sequencer</div>
+    <div class="nav-right">Online Optimisers</div>
+</nav>
+
+<div class="hero">
+    <div class="pill">LinkedIn Automation</div>
+    <h1>200 LinkedIn Conversations.</h1>
+    <h2>Running in Parallel. You Close the Ones That Respond.</h2>
+    <div class="subline">Accept a connection. Claude writes a personalised multi-touch message sequence based on their profile. PhantomBuster delivers it. You only talk to the ones who bite.</div>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="num">200+</div>
+            <div class="label">Active Sequences</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num">5-touch</div>
+            <div class="label">Message Series</div>
+        </div>
+        <div class="hero-stat">
+            <div class="num">4x</div>
+            <div class="label">Reply Rate vs Generic</div>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="wrap">
+        <div class="section-label">Pipeline</div>
+        <div class="section-title">How It Works</div>
+        <div class="pipeline">
+            <div class="pipeline-step">
+                <div class="step-icon">&#x1F91D;</div>
+                <div class="step-name">Connection Accepted</div>
+                <div class="step-sub">New LinkedIn connection</div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">&#x1F47B;</div>
+                <div class="step-name">PhantomBuster Detects</div>
+                <div class="step-sub">Triggers webhook</div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">&#x1F9E0;</div>
+                <div class="step-name">Claude Reads Profile</div>
+                <div class="step-sub">Title, company, posts</div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">&#x270D;&#xFE0F;</div>
+                <div class="step-name">Claude Writes Sequence</div>
+                <div class="step-sub">5 personalised messages</div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step">
+                <div class="step-icon">&#x1F4C5;</div>
+                <div class="step-name">PhantomBuster Schedules</div>
+                <div class="step-sub">Day 1, 3, 7, 14, 21</div>
+            </div>
+            <div class="pipeline-arrow">&rarr;</div>
+            <div class="pipeline-step slack-step">
+                <div class="step-icon">&#x1F4AC;</div>
+                <div class="step-name">Slack Alert</div>
+                <div class="step-sub">When someone replies</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="section-label">What Thonty Sees</div>
+        <div class="section-title">Slack Notification</div>
+        <div class="slack-box">
+            <div class="slack-header">&#x1F916; New LinkedIn sequence created!</div>
+            <div class="slack-meta">#linkedin-nurture &middot; just now</div>
+            <span class="s-section">&#x1F464; Connection</span>
+            <div class="indent">Mike Torres, Owner @ Torres Landscaping, Austin TX</div>
+            <span class="s-section">&#x1F4E9; Message 1 <span class="s-muted">(Day 1)</span></span>
+            <div class="indent">"Mike &mdash; saw you're running Torres Landscaping in Austin. Competitive market. Quick question: when someone asks ChatGPT for the best landscaper in Austin, do you show up? Most don't. Happy to show you where you stand."</div>
+            <span class="s-section">&#x1F4E9; Message 2 <span class="s-muted">(Day 3)</span></span>
+            <div class="indent">"No pressure Mike &mdash; just ran a quick check. Your competitors [Austin Green Pros] and [Capital Landscaping] are both showing up in AI search. You're not. 2 minute breakdown here if useful: [link]"</div>
+            <span class="s-section">&#x1F4E9; Message 3 <span class="s-muted">(Day 7)</span></span>
+            <div class="indent"><span class="s-muted">[value-add, industry insight]</span></div>
+            <span class="s-section">&#x1F4E9; Message 4 <span class="s-muted">(Day 14)</span></span>
+            <div class="indent"><span class="s-muted">[social proof, case study]</span></div>
+            <span class="s-section">&#x1F4E9; Message 5 <span class="s-muted">(Day 21)</span></span>
+            <div class="indent"><span class="s-muted">[breakup message]</span></div>
+            <br>
+            <span class="s-green">Sequence queued. First message sends tomorrow 9am CT.</span>
+        </div>
+        <div class="slack-caption">Full 5-message sequence personalised to each connection's business.</div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="section-label">Comparison</div>
+        <div class="section-title">Before &amp; After</div>
+        <div class="before-after">
+            <div class="ba-panel before">
+                <div class="ba-label">Before</div>
+                <div class="ba-title">The Dead Connection</div>
+                <div class="ba-body">Accept connection. Send generic "thanks for connecting" message. Never follow up. Connection dies.</div>
+            </div>
+            <div class="ba-panel after">
+                <div class="ba-label">After</div>
+                <div class="ba-title">Automated Nurture Machine</div>
+                <div class="ba-body">Accept connection. Claude writes a 5-message sequence personalised to their business. Messages go out over 3 weeks. You only engage when they respond.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="section-label">Tech Stack</div>
+        <div class="section-title">Tools &amp; Costs</div>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-name">PhantomBuster</div>
+                <div class="tool-desc">LinkedIn automation &amp; message scheduling</div>
+                <div class="tool-tag">&#x2713; API</div>
+                <div class="tool-price">$56/mo</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-name">Claude</div>
+                <div class="tool-desc">Profile analysis &amp; sequence copywriting</div>
+                <div class="tool-tag">&#x2713; API</div>
+                <div class="tool-price">$0.03/sequence</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-name">n8n</div>
+                <div class="tool-desc">Workflow orchestration</div>
+                <div class="tool-tag">&#x2713; API</div>
+                <div class="tool-price">$20/mo</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-name">Slack</div>
+                <div class="tool-desc">Reply notifications</div>
+                <div class="tool-tag">&#x2713; API</div>
+                <div class="tool-price">Free</div>
+            </div>
+        </div>
+        <div class="cost-line">Total cost: ~$0.03 per sequence created</div>
+    </div>
+</section>
+
+<section>
+    <div class="wrap">
+        <div class="section-label">Implementation</div>
+        <div class="section-title">Build Steps</div>
+        <div class="build-steps">
+            <div class="build-step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <div class="step-title">Connect PhantomBuster Connection Detector to n8n</div>
+                    <div class="step-body">Set up PhantomBuster to detect new LinkedIn connections and trigger an n8n webhook with profile data.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <div class="step-title">Build Claude Prompt for LinkedIn Profile Analysis</div>
+                    <div class="step-body">Extract title, company, industry, location, and recent activity to understand the prospect's business context.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <div class="step-title">Build Claude Prompt for 5-Message Nurture Sequence</div>
+                    <div class="step-body">Generate personalised messages: opener, value drop, industry insight, social proof, and breakup — tailored to their business.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <div class="step-title">Connect PhantomBuster Message Scheduler via API</div>
+                    <div class="step-body">Queue the 5 messages with PhantomBuster's scheduling API at Day 1, 3, 7, 14, and 21 intervals.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <div class="step-title">Set Up Slack Alerts for Replies</div>
+                    <div class="step-body">Monitor for LinkedIn replies via PhantomBuster and send instant Slack notifications when a prospect responds.</div>
+                </div>
+            </div>
+            <div class="build-step">
+                <div class="step-num">6</div>
+                <div class="step-content">
+                    <div class="step-title">Test with 10 Real New Connections</div>
+                    <div class="step-body">Validate sequence quality, personalisation accuracy, and scheduling reliability before scaling to full volume.</div>
+                </div>
+            </div>
+        </div>
+        <div class="cta-callout">
+            <p>200+ conversations running in parallel. Every message personalised. Every follow-up timed perfectly. You only step in when someone's ready to talk.</p>
+        </div>
+    </div>
+</section>
+
+<footer>Online Optimisers &mdash; Automation Showcase</footer>
+
+</body>
+</html>
