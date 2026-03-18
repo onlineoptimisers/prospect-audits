@@ -9,529 +9,121 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --blue: #005DE0;
-      --navy: #072F60;
-      --accent: #1555FC;
-      --bg: #060f1e;
-      --surface: #0d1b2e;
-      --surface2: #111f35;
-      --border: #1a2d4a;
-      --text: #e8edf4;
-      --muted: #7a90aa;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --red: #ef4444;
+      --blue: #005DE0; --navy: #072F60; --accent: #1555FC; --bg: #060f1e;
+      --surface: #0d1b2e; --surface2: #111f35; --border: #1a2d4a;
+      --text: #e8edf4; --muted: #7a90aa; --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
     }
 
     html { scroll-behavior: smooth; }
+    body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    body {
-      font-family: 'Manrope', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 16px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+    body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+    body > * { position: relative; z-index: 1; }
 
-    /* ── NAV ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: 52px;
-      background: rgba(6, 15, 30, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-    }
-
-    nav a.nav-back {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: color 0.2s;
-      white-space: nowrap;
-    }
+    nav { position: sticky; top: 0; z-index: 100; height: 52px; background: rgba(6, 15, 30, 0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+    nav a.nav-back { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; transition: color 0.2s; white-space: nowrap; }
     nav a.nav-back:hover { color: var(--text); }
+    nav .nav-centre { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; display: flex; align-items: center; gap: 8px; }
+    .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.6); } 50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0); } }
+    nav .nav-right { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; }
 
-    nav .nav-centre {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.01em;
-    }
+    .hero { width: 100%; padding: 100px 32px 90px; text-align: center; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 93, 224, 0.18) 0%, transparent 70%), linear-gradient(180deg, #060f1e 0%, #060f1e 100%); border-bottom: 1px solid var(--border); }
+    .hero .pill { display: inline-block; background: rgba(0, 93, 224, 0.15); border: 1px solid rgba(0, 93, 224, 0.4); color: #5ba3ff; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 36px; }
+    .hero h1 { font-size: 44px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .hero h2 { font-size: 44px; font-weight: 800; background: linear-gradient(90deg, #06B6D4, #005DE0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 24px; }
+    .hero .subline { font-size: 18px; font-weight: 400; color: var(--muted); max-width: 600px; margin: 0 auto 60px; }
+    .hero-stats { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+    .hero-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .hero-stat .num { font-size: 36px; font-weight: 800; color: var(--blue); line-height: 1; }
+    .hero-stat .label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
 
-    nav .nav-right {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      white-space: nowrap;
-    }
-
-    /* ── HERO ── */
-    .hero {
-      width: 100%;
-      padding: 100px 32px 90px;
-      text-align: center;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 93, 224, 0.18) 0%, transparent 70%),
-                  linear-gradient(180deg, #060f1e 0%, #060f1e 100%);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero .pill {
-      display: inline-block;
-      background: rgba(0, 93, 224, 0.15);
-      border: 1px solid rgba(0, 93, 224, 0.4);
-      color: #5ba3ff;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 100px;
-      margin-bottom: 36px;
-    }
-
-    .hero h1 {
-      font-size: 44px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-    }
-
-    .hero h2 {
-      font-size: 44px;
-      font-weight: 800;
-      color: var(--blue);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-    }
-
-    .hero .subline {
-      font-size: 18px;
-      font-weight: 400;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 60px;
-    }
-
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-      flex-wrap: wrap;
-    }
-
-    .hero-stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .hero-stat .num {
-      font-size: 36px;
-      font-weight: 800;
-      color: var(--blue);
-      line-height: 1;
-    }
-
-    .hero-stat .label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* ── LAYOUT WRAPPER ── */
-    .wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 32px;
-    }
-
-    /* ── SECTIONS ── */
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 32px; }
     section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--border); }
+    .section-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 16px; }
+    .section-title { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 32px; line-height: 1.2; }
 
-    section + section {
-      border-top: 1px solid var(--border);
-    }
+    .data-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+    .data-card p { font-size: 17px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .data-card .bold-line { font-size: 18px; font-weight: 700; color: var(--text); }
 
-    .section-label {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 16px;
-    }
+    .metric-strip { display: flex; gap: 16px; margin-top: 40px; }
+    .metric-card { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; transition: border-color 0.25s, transform 0.2s; }
+    .metric-card:hover { border-color: #06B6D4; transform: translateY(-2px); }
+    .metric-num { font-size: 36px; font-weight: 800; color: #06B6D4; line-height: 1; margin-bottom: 6px; }
+    .metric-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
-    .section-title {
-      font-size: 32px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.02em;
-      margin-bottom: 32px;
-      line-height: 1.2;
-    }
+    .dimensions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .dim-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 18px; transition: border-color 0.25s, transform 0.2s; cursor: default; }
+    .dim-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .dim-card .dim-icon { font-size: 26px; margin-bottom: 10px; }
+    .dim-card .dim-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .dim-card .dim-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
-    /* ── DATA CARD ── */
-    .data-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px;
-    }
-
-    .data-card p {
-      font-size: 17px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 24px;
-    }
-
-    .data-card .bold-line {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    /* ── PIPELINE ── */
-    .pipeline {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      margin-top: 8px;
-    }
-
-    .pipeline-step {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 20px;
-      text-align: center;
-      position: relative;
-      transition: border-color 0.2s;
-    }
-
-    .pipeline-step:hover { border-color: var(--blue); }
-
-    .pipeline-step.slack-step {
-      border-color: rgba(34, 197, 94, 0.3);
-      background: rgba(34, 197, 94, 0.04);
-    }
-
+    .pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 8px; }
+    .pipeline-step { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 20px; text-align: center; position: relative; transition: border-color 0.25s, box-shadow 0.25s; }
+    .pipeline-step:hover { border-color: #06B6D4; box-shadow: 0 0 20px rgba(6,182,212,0.15); }
+    .pipeline-step.slack-step { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.04); }
     .pipeline-step.slack-step:hover { border-color: var(--green); }
+    .pipeline-arrow { display: flex; align-items: center; padding: 0 6px; color: rgba(6,182,212,0.4); font-size: 20px; flex-shrink: 0; animation: flow-pulse 2s ease-in-out infinite; }
+    @keyframes flow-pulse { 0%, 100% { color: rgba(6,182,212,0.25); } 50% { color: rgba(6,182,212,0.7); } }
+    .pipeline-step .step-icon { font-size: 28px; margin-bottom: 10px; }
+    .pipeline-step .step-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pipeline-step .step-sub { font-size: 11px; font-weight: 500; color: var(--muted); line-height: 1.4; }
+    .pipeline-step.slack-step .step-name { color: var(--green); }
 
-    .pipeline-arrow {
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      color: var(--muted);
-      font-size: 20px;
-      flex-shrink: 0;
-    }
-
-    .pipeline-step .step-icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .pipeline-step .step-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .pipeline-step .step-sub {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .pipeline-step.slack-step .step-name {
-      color: var(--green);
-    }
-
-    /* ── DIMENSIONS GRID ── */
-    .dimensions-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .dim-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 18px;
-      transition: border-color 0.25s, transform 0.2s;
-      cursor: default;
-    }
-
-    .dim-card:hover {
-      border-color: var(--blue);
-      transform: translateY(-2px);
-    }
-
-    .dim-card .dim-icon {
-      font-size: 26px;
-      margin-bottom: 10px;
-    }
-
-    .dim-card .dim-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .dim-card .dim-desc {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    /* ── SLACK MOCK ── */
-    .slack-box {
-      background: #1a1d21;
-      border: 1px solid #2d3139;
-      border-radius: 12px;
-      padding: 28px 32px;
-      font-family: 'Manrope', monospace;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #d1d5db;
-      overflow-x: auto;
-    }
-
-    .slack-box .slack-header {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .slack-box .slack-meta {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #2d3139;
-      padding-bottom: 14px;
-    }
-
-    .slack-box .s-section {
-      color: #5ba3ff;
-      font-weight: 700;
-      margin-top: 14px;
-      margin-bottom: 4px;
-      display: block;
-    }
-
+    .slack-box { background: #1a1d21; border: 1px solid #2d3139; border-left: 3px solid var(--green); border-radius: 12px; padding: 28px 32px; font-family: 'Manrope', monospace; font-size: 13px; line-height: 1.7; color: #d1d5db; overflow-x: auto; position: relative; animation: slack-glow 3s ease-in-out infinite; }
+    @keyframes slack-glow { 0%, 100% { border-left-color: rgba(34,197,94,0.5); } 50% { border-left-color: rgba(34,197,94,1); } }
+    .slack-copy-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .slack-copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .slack-box .slack-header { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .slack-box .slack-meta { font-size: 12px; color: #6b7280; margin-bottom: 20px; border-bottom: 1px solid #2d3139; padding-bottom: 14px; }
+    .slack-box .s-section { color: #5ba3ff; font-weight: 700; margin-top: 14px; margin-bottom: 4px; display: block; }
     .slack-box .s-green { color: var(--green); }
     .slack-box .s-amber { color: var(--amber); }
     .slack-box .s-red { color: var(--red); }
     .slack-box .s-muted { color: #6b7280; }
-    .slack-box .s-link {
-      color: var(--blue);
-      text-decoration: underline;
-      cursor: pointer;
-    }
+    .slack-box .s-link { color: var(--blue); text-decoration: underline; cursor: pointer; }
+    .slack-box .indent { padding-left: 16px; border-left: 2px solid #2d3139; margin: 6px 0 10px; }
+    .slack-caption { text-align: center; font-size: 14px; color: var(--muted); margin-top: 24px; font-weight: 500; }
 
-    .slack-box .indent {
-      padding-left: 16px;
-      border-left: 2px solid #2d3139;
-      margin: 6px 0 10px;
-    }
-
-    .slack-caption {
-      text-align: center;
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 24px;
-      font-weight: 500;
-    }
-
-    /* ── BEFORE / AFTER ── */
-    .before-after {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .ba-panel {
-      border-radius: 14px;
-      padding: 32px;
-    }
-
-    .ba-panel.before {
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
-
-    .ba-panel.after {
-      background: rgba(0, 93, 224, 0.08);
-      border: 1px solid rgba(0, 93, 224, 0.3);
-    }
-
-    .ba-panel .ba-label {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
+    .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .ba-panel { border-radius: 14px; padding: 32px; }
+    .ba-panel.before { background: var(--surface); border: 1px solid var(--border); }
+    .ba-panel.after { background: rgba(0, 93, 224, 0.08); border: 1px solid rgba(0, 93, 224, 0.3); }
+    .ba-panel .ba-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; }
     .ba-panel.before .ba-label { color: var(--red); }
     .ba-panel.after .ba-label { color: var(--green); }
+    .ba-panel .ba-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .ba-panel .ba-body { font-size: 15px; color: var(--muted); line-height: 1.7; }
 
-    .ba-panel .ba-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 16px;
-    }
+    .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 18px; }
+    .tool-card .tool-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .tool-card .tool-desc { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .tool-card .tool-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--green); background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 100px; padding: 3px 10px; margin-bottom: 4px; margin-right: 4px; }
+    .tool-card .tool-price { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .cost-line { text-align: center; font-size: 16px; font-weight: 700; color: var(--green); }
 
-    .ba-panel .ba-body {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
+    .build-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+    .build-step { display: flex; align-items: flex-start; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; }
+    .build-step .step-num { font-size: 28px; font-weight: 800; color: var(--blue); line-height: 1; min-width: 36px; }
+    .build-step .step-content .step-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .build-step .step-content .step-body { font-size: 14px; color: var(--muted); }
+    .cta-callout { background: var(--blue); border-radius: 14px; padding: 32px 40px; text-align: center; }
+    .cta-callout p { font-size: 17px; font-weight: 600; color: #fff; line-height: 1.6; }
 
-    /* ── TOOL CARDS ── */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+    .page-nav { max-width: 900px; margin: 0 auto; padding: 40px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .pn-link { text-decoration: none; display: flex; flex-direction: column; gap: 2px; padding: 14px 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); transition: all 0.2s; }
+    .pn-link:hover { border-color: #06B6D4; transform: translateY(-2px); }
+    .pn-dir { font-size: 11px; font-weight: 700; color: #06B6D4; letter-spacing: 0.5px; }
+    .pn-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .pn-home { font-size: 12px; font-weight: 700; color: var(--muted); flex-direction: row; padding: 10px 16px; }
+    .pn-home:hover { color: #fff; }
 
-    .tool-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 18px;
-    }
+    footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; font-size: 13px; color: var(--muted); font-weight: 500; }
 
-    .tool-card .tool-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-
-    .tool-card .tool-desc {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 14px;
-      line-height: 1.5;
-    }
-
-    .tool-card .tool-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--green);
-      background: rgba(34, 197, 94, 0.1);
-      border: 1px solid rgba(34, 197, 94, 0.2);
-      border-radius: 100px;
-      padding: 3px 10px;
-      margin-bottom: 4px;
-      margin-right: 4px;
-    }
-
-    .tool-card .tool-price {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    .cost-line {
-      text-align: center;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--green);
-    }
-
-    /* ── BUILD STEPS ── */
-    .build-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .build-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-    }
-
-    .build-step .step-num {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--blue);
-      line-height: 1;
-      min-width: 36px;
-    }
-
-    .build-step .step-content .step-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .build-step .step-content .step-body {
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    /* ── CTA CALLOUT ── */
-    .cta-callout {
-      background: var(--blue);
-      border-radius: 14px;
-      padding: 32px 40px;
-      text-align: center;
-    }
-
-    .cta-callout p {
-      font-size: 17px;
-      font-weight: 600;
-      color: #fff;
-      line-height: 1.6;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .hero h1, .hero h2 { font-size: 32px; }
       .hero-stats { gap: 32px; }
@@ -544,293 +136,147 @@
       nav .nav-centre { font-size: 12px; }
       .wrap { padding: 0 20px; }
       .slack-box { padding: 20px; }
+      .metric-strip, .page-nav { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
   <nav>
     <a href="thonty-automations-overview.html" class="nav-back">&larr; Back to Overview</a>
-    <span class="nav-centre">&#127919; "Why Now" Trigger Detector</span>
+    <span class="nav-centre"><span class="live-dot"></span> "Why Now" Trigger Detector</span>
     <span class="nav-right">Online Optimisers</span>
   </nav>
 
-  <!-- HERO -->
   <div class="hero">
     <div class="pill">Intent Signal Monitoring</div>
     <h1>Know Exactly When a Lead</h1>
     <h2>Is Ready to Hear From You.</h2>
-    <p class="subline">Claude monitors your entire lead list for trigger events — bad reviews, new locations, hiring ads, website redesigns — and alerts you with the perfect opening angle.</p>
+    <p class="subline">Claude monitors your entire lead list for trigger events &mdash; bad reviews, new locations, hiring ads, website redesigns &mdash; and alerts you with the perfect opening angle.</p>
     <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="num">6</span>
-        <span class="label">Trigger Types Monitored</span>
-      </div>
-      <div class="hero-stat">
-        <span class="num">Daily</span>
-        <span class="label">Scanning Frequency</span>
-      </div>
-      <div class="hero-stat">
-        <span class="num">2x</span>
-        <span class="label">Reply Rate vs Cold Outreach</span>
-      </div>
+      <div class="hero-stat"><span class="num">6</span><span class="label">Trigger Types Monitored</span></div>
+      <div class="hero-stat"><span class="num">Daily</span><span class="label">Scanning Frequency</span></div>
+      <div class="hero-stat"><span class="num">2x</span><span class="label">Reply Rate vs Cold Outreach</span></div>
     </div>
   </div>
 
-  <!-- SECTION: THE PROBLEM -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">The Problem</div>
-      <div class="section-title">Cold Outreach Is Dying. Timing Is Everything.</div>
-      <div class="data-card">
-        <p>Generic cold emails get ignored. The difference between a 2% reply rate and a 10% reply rate isn't better copy — it's better timing. When a business just got hit with bad reviews, or just opened a new location, or just redesigned their website, they're actively thinking about marketing. That's the moment to reach out.</p>
-        <p style="margin-bottom: 0;">The problem is you can't manually check 500 leads every day for trigger events. But Claude can.</p>
-        <div style="height: 24px;"></div>
-        <div class="bold-line">Stop spraying generic messages. Start reaching out at the exact right moment with the exact right angle.</div>
-      </div>
+  <section><div class="wrap">
+    <div class="section-label">The Problem</div>
+    <div class="section-title">Cold Outreach Is Dying. Timing Is Everything.</div>
+    <div class="data-card">
+      <p>Generic cold emails get ignored. The difference between a 2% reply rate and a 10% reply rate isn't better copy &mdash; it's better timing. When a business just got hit with bad reviews, or just opened a new location, or just redesigned their website, they're actively thinking about marketing. That's the moment to reach out.</p>
+      <p style="margin-bottom: 0;">The problem is you can't manually check 500 leads every day for trigger events. But Claude can.</p>
+      <div style="height: 24px;"></div>
+      <div class="bold-line">Stop spraying generic messages. Start reaching out at the exact right moment with the exact right angle.</div>
     </div>
-  </section>
+  </div></section>
 
-  <!-- SECTION: TRIGGER TYPES -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">Signal Types</div>
-      <div class="section-title">What Claude Watches For</div>
-      <div class="dimensions-grid">
-        <div class="dim-card">
-          <div class="dim-icon">&#11088;</div>
-          <div class="dim-name">Bad Reviews</div>
-          <div class="dim-desc">GBP rating drops or cluster of 1-star reviews in the past week. Pain is fresh.</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-icon">&#128205;</div>
-          <div class="dim-name">New Location</div>
-          <div class="dim-desc">New GBP listing or second address detected. They need visibility for the new spot.</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-icon">&#128188;</div>
-          <div class="dim-name">Hiring Ads</div>
-          <div class="dim-desc">Job postings on Indeed/LinkedIn signal growth. Growing businesses invest in marketing.</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-icon">&#127760;</div>
-          <div class="dim-name">Website Redesign</div>
-          <div class="dim-desc">Major site changes detected. They're investing in their online presence already.</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-icon">&#128200;</div>
-          <div class="dim-name">Competitor Gains</div>
-          <div class="dim-desc">A direct competitor just jumped in rankings or got featured in AI answers. FOMO trigger.</div>
-        </div>
-        <div class="dim-card">
-          <div class="dim-icon">&#128176;</div>
-          <div class="dim-name">Funding / Expansion</div>
-          <div class="dim-desc">News mentions of funding, acquisition, or expansion plans. Budget is available.</div>
-        </div>
-      </div>
+  <section><div class="wrap">
+    <div class="section-label">Signal Types</div>
+    <div class="section-title">What Claude Watches For</div>
+    <div class="dimensions-grid">
+      <div class="dim-card"><div class="dim-icon">&#11088;</div><div class="dim-name">Bad Reviews</div><div class="dim-desc">GBP rating drops or cluster of 1-star reviews in the past week. Pain is fresh.</div></div>
+      <div class="dim-card"><div class="dim-icon">&#128205;</div><div class="dim-name">New Location</div><div class="dim-desc">New GBP listing or second address detected. They need visibility for the new spot.</div></div>
+      <div class="dim-card"><div class="dim-icon">&#128188;</div><div class="dim-name">Hiring Ads</div><div class="dim-desc">Job postings on Indeed/LinkedIn signal growth. Growing businesses invest in marketing.</div></div>
+      <div class="dim-card"><div class="dim-icon">&#127760;</div><div class="dim-name">Website Redesign</div><div class="dim-desc">Major site changes detected. They're investing in their online presence already.</div></div>
+      <div class="dim-card"><div class="dim-icon">&#128200;</div><div class="dim-name">Competitor Gains</div><div class="dim-desc">A direct competitor just jumped in rankings or got featured in AI answers. FOMO trigger.</div></div>
+      <div class="dim-card"><div class="dim-icon">&#128176;</div><div class="dim-name">Funding / Expansion</div><div class="dim-desc">News mentions of funding, acquisition, or expansion plans. Budget is available.</div></div>
     </div>
-  </section>
+  </div></section>
 
-  <!-- SECTION: THE PIPELINE -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">How It Works</div>
-      <div class="section-title">The Pipeline</div>
-      <div class="pipeline">
-        <div class="pipeline-step">
-          <div class="step-icon">&#128202;</div>
-          <div class="step-name">Airtable</div>
-          <div class="step-sub">Lead list with<br>domains + GBP links</div>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-step">
-          <div class="step-icon">&#9889;</div>
-          <div class="step-name">n8n Scan</div>
-          <div class="step-sub">Daily scheduled<br>workflow runs</div>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-step">
-          <div class="step-icon">&#128269;</div>
-          <div class="step-name">Data Sources</div>
-          <div class="step-sub">DataForSEO + GBP<br>+ Apollo checked</div>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-step">
-          <div class="step-icon">&#129302;</div>
-          <div class="step-name">Claude Analyses</div>
-          <div class="step-sub">Triggers scored<br>+ angle written</div>
-        </div>
-        <div class="pipeline-arrow">&rarr;</div>
-        <div class="pipeline-step slack-step">
-          <div class="step-icon">&#128172;</div>
-          <div class="step-name">Slack Alert</div>
-          <div class="step-sub">Thonty gets trigger<br>+ ready-to-send angle</div>
-        </div>
-      </div>
+  <section><div class="wrap">
+    <div class="section-label">How It Works</div>
+    <div class="section-title">The Pipeline</div>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="step-icon">&#128202;</div><div class="step-name">Airtable</div><div class="step-sub">Lead list with<br>domains + GBP links</div></div>
+      <div class="pipeline-arrow" style="animation-delay:0s">&rarr;</div>
+      <div class="pipeline-step"><div class="step-icon">&#9889;</div><div class="step-name">n8n Scan</div><div class="step-sub">Daily scheduled<br>workflow runs</div></div>
+      <div class="pipeline-arrow" style="animation-delay:0.4s">&rarr;</div>
+      <div class="pipeline-step"><div class="step-icon">&#128269;</div><div class="step-name">Data Sources</div><div class="step-sub">DataForSEO + GBP<br>+ Apollo checked</div></div>
+      <div class="pipeline-arrow" style="animation-delay:0.8s">&rarr;</div>
+      <div class="pipeline-step"><div class="step-icon">&#129302;</div><div class="step-name">Claude Analyses</div><div class="step-sub">Triggers scored<br>+ angle written</div></div>
+      <div class="pipeline-arrow" style="animation-delay:1.2s">&rarr;</div>
+      <div class="pipeline-step slack-step"><div class="step-icon">&#128172;</div><div class="step-name">Slack Alert</div><div class="step-sub">Thonty gets trigger<br>+ ready-to-send angle</div></div>
     </div>
-  </section>
-
-  <!-- SECTION: SLACK MOCKUP -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">The Output</div>
-      <div class="section-title">What Thonty Gets in Slack</div>
-
-      <div class="slack-box">
-        <div class="slack-header">&#127919; Trigger Detected!</div>
-        <div class="slack-meta">Why Now Scanner &nbsp;|&nbsp; Daily scan completed &nbsp;|&nbsp; 3 triggers found today</div>
-
-        <span class="s-section">&#128100; LEAD</span>
-        <div class="indent">
-          <strong>Tony's Plumbing</strong> &nbsp;<span class="s-muted">(Lead #47)</span><br>
-          Domain: tonysplumbing.com<br>
-          GBP: Tony's Plumbing - Nashville, TN
-        </div>
-
-        <span class="s-section">&#128680; TRIGGER: BAD REVIEWS</span>
-        <div class="indent">
-          <span class="s-red">3 new 1-star reviews</span> in the past 7 days<br>
-          GBP rating dropped from <strong>4.6</strong> to <strong>4.2</strong><br>
-          Common complaint: <em>"impossible to reach"</em>, <em>"never returned my call"</em>
-        </div>
-
-        <span class="s-section">&#127919; SUGGESTED ANGLE</span>
-        <div class="indent">
-          <em>"Tony — noticed your reviews took a hit recently. We help local businesses fix exactly this. Want to see how?"</em>
-        </div>
-
-        <span class="s-section">&#128203; ACTION</span>
-        <div class="indent">
-          Reply <span class="s-green">'send'</span> to queue this message in Instantly<br>
-          Reply <span class="s-amber">'edit'</span> to customise before sending<br>
-          Reply <span class="s-muted">'skip'</span> to pass on this one
-        </div>
-      </div>
-
-      <p class="slack-caption">Every morning: a curated list of leads who are ready to hear from you, with the angle already written.</p>
+    <div class="metric-strip">
+      <div class="metric-card"><div class="metric-num">6</div><div class="metric-label">Trigger Types</div></div>
+      <div class="metric-card"><div class="metric-num">Daily</div><div class="metric-label">Scan Frequency</div></div>
+      <div class="metric-card"><div class="metric-num">$0.03</div><div class="metric-label">Per Lead Per Scan</div></div>
     </div>
-  </section>
+  </div></section>
 
-  <!-- SECTION: BEFORE / AFTER -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">The Difference</div>
-      <div class="section-title">Before vs After</div>
-
-      <div class="before-after">
-        <div class="ba-panel before">
-          <div class="ba-label">Before</div>
-          <div class="ba-title">Spray and Pray</div>
-          <div class="ba-body">You cold email 500 leads with the same generic message. 2% reply rate. No idea who's actually ready to buy. You're guessing at timing, guessing at angles, and hoping something sticks.</div>
-        </div>
-        <div class="ba-panel after">
-          <div class="ba-label">After</div>
-          <div class="ba-title">Precision Timing</div>
-          <div class="ba-body">Claude scans your 500 leads daily. Alerts you the moment one of them shows a buying signal. You reach out with the exact right angle at the exact right time. Every message feels personal because it is.</div>
-        </div>
-      </div>
+  <section><div class="wrap">
+    <div class="section-label">The Output</div>
+    <div class="section-title">What Thonty Gets in Slack</div>
+    <div class="slack-box" id="slackBox1">
+      <button class="slack-copy-btn" onclick="copySlack('slackBox1')">Copy Brief</button>
+      <div class="slack-header">&#127919; Trigger Detected!</div>
+      <div class="slack-meta">Why Now Scanner &nbsp;|&nbsp; Daily scan completed &nbsp;|&nbsp; 3 triggers found today</div>
+      <span class="s-section">&#128100; LEAD</span>
+      <div class="indent"><strong>Tony's Plumbing</strong> &nbsp;<span class="s-muted">(Lead #47)</span><br>Domain: tonysplumbing.com<br>GBP: Tony's Plumbing - Nashville, TN</div>
+      <span class="s-section">&#128680; TRIGGER: BAD REVIEWS</span>
+      <div class="indent"><span class="s-red">3 new 1-star reviews</span> in the past 7 days<br>GBP rating dropped from <strong>4.6</strong> to <strong>4.2</strong><br>Common complaint: <em>"impossible to reach"</em>, <em>"never returned my call"</em></div>
+      <span class="s-section">&#127919; SUGGESTED ANGLE</span>
+      <div class="indent"><em>"Tony &mdash; noticed your reviews took a hit recently. We help local businesses fix exactly this. Want to see how?"</em></div>
+      <span class="s-section">&#128203; ACTION</span>
+      <div class="indent">Reply <span class="s-green">'send'</span> to queue this message in Instantly<br>Reply <span class="s-amber">'edit'</span> to customise before sending<br>Reply <span class="s-muted">'skip'</span> to pass on this one</div>
     </div>
-  </section>
+    <p class="slack-caption">Every morning: a curated list of leads who are ready to hear from you, with the angle already written.</p>
+  </div></section>
 
-  <!-- SECTION: TOOLS -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">The Stack</div>
-      <div class="section-title">Tools</div>
-
-      <div class="tools-grid">
-        <div class="tool-card">
-          <div class="tool-name">DataForSEO</div>
-          <div class="tool-desc">Website change detection + SERP monitoring for competitor movements</div>
-          <span class="tool-tag">&#10003; API</span>
-          <div class="tool-price">$50/mo</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">GBP API</div>
-          <div class="tool-desc">Review monitoring — catches rating drops and bad review clusters</div>
-          <span class="tool-tag">&#10003; API</span>
-          <div class="tool-price">Free</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">Apollo</div>
-          <div class="tool-desc">Company signals — hiring, funding, expansion, and news alerts</div>
-          <span class="tool-tag">&#10003; API</span>
-          <div class="tool-price">$49/mo</div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-name">Claude API</div>
-          <div class="tool-desc">Analyses trigger data and writes the perfect opening angle</div>
-          <span class="tool-tag">&#10003; API</span>
-          <div class="tool-price">~$0.02/scan</div>
-        </div>
-      </div>
-
-      <p class="cost-line">Total cost per lead per scan cycle: ~$0.03</p>
+  <section><div class="wrap">
+    <div class="section-label">The Difference</div>
+    <div class="section-title">Before vs After</div>
+    <div class="before-after">
+      <div class="ba-panel before"><div class="ba-label">Before</div><div class="ba-title">Spray and Pray</div><div class="ba-body">You cold email 500 leads with the same generic message. 2% reply rate. No idea who's actually ready to buy. You're guessing at timing, guessing at angles, and hoping something sticks.</div></div>
+      <div class="ba-panel after"><div class="ba-label">After</div><div class="ba-title">Precision Timing</div><div class="ba-body">Claude scans your 500 leads daily. Alerts you the moment one of them shows a buying signal. You reach out with the exact right angle at the exact right time. Every message feels personal because it is.</div></div>
     </div>
-  </section>
+  </div></section>
 
-  <!-- SECTION: BUILD THIS -->
-  <section>
-    <div class="wrap">
-      <div class="section-label">Implementation</div>
-      <div class="section-title">Build This</div>
-
-      <div class="build-steps">
-        <div class="build-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <div class="step-title">Load lead list into Airtable with domains + GBP links</div>
-            <div class="step-body">Create a base with lead name, domain, GBP URL, and status columns. This is the source of truth for which leads get scanned daily.</div>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <div class="step-title">Build n8n scheduled workflow (daily scan)</div>
-            <div class="step-body">Set up a cron-triggered n8n workflow that pulls the active lead list from Airtable each morning and fans out to the data source APIs.</div>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <div class="step-title">Connect DataForSEO for website change detection</div>
-            <div class="step-body">For each lead domain, check for significant website changes — redesigns, new pages, broken pages, traffic shifts — that signal they're investing or struggling.</div>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <div class="step-title">Connect GBP API for review monitoring</div>
-            <div class="step-body">Pull latest reviews and rating changes for each lead's GBP listing. Flag any rating drop or cluster of negative reviews in the past 7 days.</div>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="step-num">5</div>
-          <div class="step-content">
-            <div class="step-title">Build Claude prompt for trigger analysis + angle writing</div>
-            <div class="step-body">Claude receives the raw signal data, classifies the trigger type, scores urgency, and writes a personalised opening message tied to the specific trigger event.</div>
-          </div>
-        </div>
-        <div class="build-step">
-          <div class="step-num">6</div>
-          <div class="step-content">
-            <div class="step-title">Connect Slack for alert delivery</div>
-            <div class="step-body">Format the trigger alert with lead details, trigger type, suggested angle, and action buttons. Post to a dedicated #triggers channel each morning.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="cta-callout">
-        <p>Cold outreach gets 2% reply rates. Trigger-based outreach gets 10%+. The difference is knowing when someone is ready to hear from you.</p>
-      </div>
+  <section><div class="wrap">
+    <div class="section-label">The Stack</div>
+    <div class="section-title">Tools</div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-name">DataForSEO</div><div class="tool-desc">Website change detection + SERP monitoring for competitor movements</div><span class="tool-tag">&#10003; API</span><div class="tool-price">$50/mo</div></div>
+      <div class="tool-card"><div class="tool-name">GBP API</div><div class="tool-desc">Review monitoring &mdash; catches rating drops and bad review clusters</div><span class="tool-tag">&#10003; API</span><div class="tool-price">Free</div></div>
+      <div class="tool-card"><div class="tool-name">Apollo</div><div class="tool-desc">Company signals &mdash; hiring, funding, expansion, and news alerts</div><span class="tool-tag">&#10003; API</span><div class="tool-price">$49/mo</div></div>
+      <div class="tool-card"><div class="tool-name">Claude API</div><div class="tool-desc">Analyses trigger data and writes the perfect opening angle</div><span class="tool-tag">&#10003; API</span><div class="tool-price">~$0.02/scan</div></div>
     </div>
-  </section>
+    <p class="cost-line">Total cost per lead per scan cycle: ~$0.03</p>
+  </div></section>
 
-  <!-- FOOTER -->
-  <footer>
-    Online Optimisers &nbsp;&middot;&nbsp; "Why Now" Trigger Detector &nbsp;&middot;&nbsp; 2026
-  </footer>
+  <section><div class="wrap">
+    <div class="section-label">Implementation</div>
+    <div class="section-title">Build This</div>
+    <div class="build-steps">
+      <div class="build-step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Load lead list into Airtable with domains + GBP links</div><div class="step-body">Create a base with lead name, domain, GBP URL, and status columns. This is the source of truth for which leads get scanned daily.</div></div></div>
+      <div class="build-step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Build n8n scheduled workflow (daily scan)</div><div class="step-body">Set up a cron-triggered n8n workflow that pulls the active lead list from Airtable each morning and fans out to the data source APIs.</div></div></div>
+      <div class="build-step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Connect DataForSEO for website change detection</div><div class="step-body">For each lead domain, check for significant website changes &mdash; redesigns, new pages, broken pages, traffic shifts &mdash; that signal they're investing or struggling.</div></div></div>
+      <div class="build-step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Connect GBP API for review monitoring</div><div class="step-body">Pull latest reviews and rating changes for each lead's GBP listing. Flag any rating drop or cluster of negative reviews in the past 7 days.</div></div></div>
+      <div class="build-step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Build Claude prompt for trigger analysis + angle writing</div><div class="step-body">Claude receives the raw signal data, classifies the trigger type, scores urgency, and writes a personalised opening message tied to the specific trigger event.</div></div></div>
+      <div class="build-step"><div class="step-num">6</div><div class="step-content"><div class="step-title">Connect Slack for alert delivery</div><div class="step-body">Format the trigger alert with lead details, trigger type, suggested angle, and action buttons. Post to a dedicated #triggers channel each morning.</div></div></div>
+    </div>
+    <div class="cta-callout"><p>Cold outreach gets 2% reply rates. Trigger-based outreach gets 10%+. The difference is knowing when someone is ready to hear from you.</p></div>
+  </div></section>
 
+  <div class="page-nav">
+    <a href="thonty-auto-speed-to-lead.html" class="pn-link pn-prev"><span class="pn-dir">&larr; Previous</span><span class="pn-name">Speed-to-Lead Responder</span></a>
+    <a href="thonty-automations-overview.html" class="pn-link pn-home">All Automations</a>
+    <a href="thonty-auto-competitor-intel.html" class="pn-link pn-next"><span class="pn-dir">Next &rarr;</span><span class="pn-name">Competitor Intelligence Deck</span></a>
+  </div>
+
+  <footer>Online Optimisers &nbsp;&middot;&nbsp; "Why Now" Trigger Detector &nbsp;&middot;&nbsp; 2026</footer>
+
+  <script>
+  function copySlack(id) {
+    var box = document.getElementById(id);
+    var text = box.innerText.replace('Copy Brief', '').trim();
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = box.querySelector('.slack-copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy Brief'; }, 2000);
+    });
+  }
+  </script>
 </body>
 </html>

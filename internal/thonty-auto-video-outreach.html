@@ -19,6 +19,10 @@
       --muted: #8ba3be;
       --light: #c8d8e8;
       --white: #ffffff;
+      --border: rgba(255,255,255,0.07);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
     }
 
     html { scroll-behavior: smooth; }
@@ -32,15 +36,29 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* ── GRID BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
     /* ── NAV ── */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
       height: 52px;
-      background: rgba(6, 15, 30, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(6, 15, 30, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -61,6 +79,21 @@
       font-size: 14px;
       font-weight: 700;
       color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
     }
 
     nav .brand {
@@ -77,9 +110,7 @@
       padding: 0 24px;
     }
 
-    section {
-      padding: 80px 0;
-    }
+    section { padding: 80px 0; }
 
     .section-title {
       font-size: 26px;
@@ -96,7 +127,7 @@
       padding: 96px 0 80px;
       background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,93,224,0.18) 0%, transparent 70%);
       text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid var(--border);
     }
 
     .pill {
@@ -122,7 +153,10 @@
     }
 
     .hero-headline .blue {
-      color: #4d97ff;
+      background: linear-gradient(90deg, #06B6D4, #005DE0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       display: block;
     }
 
@@ -144,9 +178,7 @@
       flex-wrap: wrap;
     }
 
-    .stat {
-      text-align: center;
-    }
+    .stat { text-align: center; }
 
     .stat-number {
       font-size: 36px;
@@ -163,6 +195,40 @@
       text-transform: uppercase;
       color: var(--muted);
       margin-top: 6px;
+    }
+
+    /* ── METRIC STRIP ── */
+    .metric-strip {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .metric-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .metric-card:hover {
+      border-color: #06B6D4;
+      transform: translateY(-2px);
+    }
+    .metric-num {
+      font-size: 36px;
+      font-weight: 800;
+      color: #06B6D4;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .metric-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     /* ── THE PROBLEM ── */
@@ -193,8 +259,6 @@
     }
 
     /* ── PIPELINE ── */
-    #pipeline {}
-
     .pipeline-flow {
       display: flex;
       align-items: stretch;
@@ -217,6 +281,12 @@
       text-align: center;
       width: 110px;
       flex-shrink: 0;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .pipeline-step:hover {
+      border-color: #06B6D4;
+      box-shadow: 0 0 20px rgba(6,182,212,0.15);
     }
 
     .pipeline-step.blue-step {
@@ -249,11 +319,18 @@
     }
 
     .pipeline-arrow {
-      color: var(--muted);
-      font-size: 18px;
+      display: flex;
+      align-items: center;
       padding: 0 6px;
+      color: rgba(6,182,212,0.4);
+      font-size: 20px;
       flex-shrink: 0;
       align-self: center;
+      animation: flow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes flow-pulse {
+      0%, 100% { color: rgba(6,182,212,0.25); }
+      50% { color: rgba(6,182,212,0.7); }
     }
 
     .callout-pair {
@@ -309,14 +386,8 @@
       word-break: break-word;
     }
 
-    .code-box .subject-line {
-      color: #5ba3ff;
-      font-weight: 700;
-    }
-
-    .code-box .placeholder {
-      color: #ffb347;
-    }
+    .code-box .subject-line { color: #5ba3ff; font-weight: 700; }
+    .code-box .placeholder { color: #ffb347; }
 
     .code-box .thumbnail-line {
       display: block;
@@ -338,8 +409,6 @@
     }
 
     /* ── VIDEO ── */
-    #video {}
-
     .two-panel {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -364,10 +433,7 @@
       margin-bottom: 16px;
     }
 
-    .panel ul {
-      list-style: none;
-      padding: 0;
-    }
+    .panel ul { list-style: none; padding: 0; }
 
     .panel ul li {
       font-size: 14px;
@@ -381,21 +447,9 @@
     }
 
     .panel ul li:last-child { border-bottom: none; }
+    .panel ul li::before { content: '\2192'; color: var(--blue); font-weight: 700; font-size: 12px; flex-shrink: 0; }
 
-    .panel ul li::before {
-      content: '→';
-      color: var(--blue);
-      font-weight: 700;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    .panel p {
-      font-size: 15px;
-      color: var(--light);
-      font-weight: 500;
-      line-height: 1.7;
-    }
+    .panel p { font-size: 15px; color: var(--light); font-weight: 500; line-height: 1.7; }
 
     .panel-stats {
       display: flex;
@@ -415,21 +469,8 @@
       padding: 20px 12px;
     }
 
-    .panel-stat .num {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--white);
-      line-height: 1;
-    }
-
-    .panel-stat .lbl {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-top: 6px;
-    }
+    .panel-stat .num { font-size: 28px; font-weight: 800; color: var(--white); line-height: 1; }
+    .panel-stat .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-top: 6px; }
 
     /* ── SLACK ── */
     #slack-section {
@@ -441,10 +482,33 @@
     .slack-mock {
       background: #1a1d21;
       border: 1px solid rgba(255,255,255,0.1);
+      border-left: 3px solid var(--green);
       border-radius: 12px;
       padding: 28px 32px;
       max-width: 600px;
+      position: relative;
+      animation: slack-glow 3s ease-in-out infinite;
     }
+    @keyframes slack-glow {
+      0%, 100% { border-left-color: rgba(34,197,94,0.5); }
+      50% { border-left-color: rgba(34,197,94,1); }
+    }
+
+    .slack-copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .slack-copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
     .slack-header {
       font-size: 12px;
@@ -456,17 +520,8 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .slack-msg {
-      font-size: 14px;
-      line-height: 1.8;
-      color: #c9d4dd;
-      font-weight: 500;
-    }
-
-    .slack-msg strong {
-      color: var(--white);
-      font-weight: 800;
-    }
+    .slack-msg { font-size: 14px; line-height: 1.8; color: #c9d4dd; font-weight: 500; }
+    .slack-msg strong { color: var(--white); font-weight: 800; }
 
     .slack-msg .tag {
       display: inline-block;
@@ -501,8 +556,6 @@
     }
 
     /* ── TOOLS ── */
-    #tools {}
-
     .tools-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -517,31 +570,12 @@
       transition: border-color 0.2s;
     }
 
-    .tool-card:hover {
-      border-color: rgba(0,93,224,0.4);
-    }
+    .tool-card:hover { border-color: rgba(0,93,224,0.4); }
 
-    .tool-name {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--white);
-      margin-bottom: 4px;
-    }
+    .tool-name { font-size: 16px; font-weight: 800; color: var(--white); margin-bottom: 4px; }
+    .tool-role { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 12px; line-height: 1.4; }
 
-    .tool-role {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-
-    .tool-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .tool-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .api-badge {
       background: rgba(0,200,100,0.1);
@@ -554,11 +588,7 @@
       border-radius: 4px;
     }
 
-    .cost-note {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-    }
+    .cost-note { font-size: 11px; color: var(--muted); font-weight: 600; }
 
     /* ── BUILD ── */
     #build {
@@ -567,12 +597,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    .build-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
+    .build-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px; }
 
     .build-step {
       display: flex;
@@ -584,30 +609,10 @@
       padding: 24px 28px;
     }
 
-    .build-num {
-      font-size: 40px;
-      font-weight: 800;
-      color: rgba(0,93,224,0.4);
-      line-height: 1;
-      min-width: 48px;
-      flex-shrink: 0;
-    }
+    .build-num { font-size: 40px; font-weight: 800; color: rgba(0,93,224,0.4); line-height: 1; min-width: 48px; flex-shrink: 0; }
 
-    .build-text {
-      font-size: 17px;
-      color: var(--white);
-      font-weight: 700;
-      line-height: 1.5;
-      padding-top: 6px;
-    }
-
-    .build-text span {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-      margin-top: 4px;
-    }
+    .build-text { font-size: 17px; color: var(--white); font-weight: 700; line-height: 1.5; padding-top: 6px; }
+    .build-text span { display: block; font-size: 13px; color: var(--muted); font-weight: 500; margin-top: 4px; }
 
     .cta-callout {
       background: var(--blue);
@@ -620,12 +625,34 @@
       text-align: center;
     }
 
-    .cta-callout strong {
-      color: var(--white);
-      display: block;
-      font-size: 18px;
-      margin-bottom: 8px;
+    .cta-callout strong { color: var(--white); display: block; font-size: 18px; margin-bottom: 8px; }
+
+    /* ── PAGE NAV ── */
+    .page-nav {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
     }
+    .pn-link {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      transition: all 0.2s;
+    }
+    .pn-link:hover { border-color: #06B6D4; transform: translateY(-2px); }
+    .pn-dir { font-size: 11px; font-weight: 700; color: #06B6D4; letter-spacing: 0.5px; }
+    .pn-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .pn-home { font-size: 12px; font-weight: 700; color: var(--muted); flex-direction: row; padding: 10px 16px; }
+    .pn-home:hover { color: #fff; }
 
     /* ── FOOTER ── */
     footer {
@@ -645,6 +672,8 @@
       .two-panel { grid-template-columns: 1fr; }
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
       nav .nav-centre { display: none; }
+      .metric-strip { flex-direction: column; }
+      .page-nav { flex-direction: column; }
     }
 
     @media (max-width: 480px) {
@@ -656,8 +685,8 @@
 
   <!-- NAV -->
   <nav>
-    <a href="thonty-automations-overview.html" class="back">← Back to Overview</a>
-    <div class="nav-centre">🎬 AI Video Outreach</div>
+    <a href="thonty-automations-overview.html" class="back">&larr; Back to Overview</a>
+    <div class="nav-centre"><span class="live-dot"></span> AI Video Outreach</div>
     <div class="brand">Online Optimisers</div>
   </nav>
 
@@ -676,7 +705,7 @@
           <div class="stat-label">Per Video</div>
         </div>
         <div class="stat">
-          <div class="stat-number">3×</div>
+          <div class="stat-number">3&times;</div>
           <div class="stat-label">Reply Rate vs Text</div>
         </div>
         <div class="stat">
@@ -692,7 +721,7 @@
     <div class="inner">
       <div class="section-title">The Old Way</div>
       <div class="problem-card">
-        Recording personalised videos for outreach takes 3 minutes per lead. 100 leads = 5 hours. So it never happens. You send the same generic email as everyone else — the same subject line, the same opener, the same pitch they've seen a hundred times. And you wonder why no one replies.
+        Recording personalised videos for outreach takes 3 minutes per lead. 100 leads = 5 hours. So it never happens. You send the same generic email as everyone else &mdash; the same subject line, the same opener, the same pitch they've seen a hundred times. And you wonder why no one replies.
       </div>
       <p class="problem-callout">The ones who personalise win.<br>The ones who can do it at scale dominate.</p>
     </div>
@@ -704,7 +733,6 @@
       <div class="section-title">How It Works</div>
 
       <div class="pipeline-flow">
-
         <div class="pipeline-step-wrap">
           <div class="pipeline-step blue-step">
             <div class="step-num">Step 1</div>
@@ -712,9 +740,7 @@
             <div class="step-desc">Lead added with name, company, niche, city</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:0s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step">
             <div class="step-num">Step 2</div>
@@ -722,9 +748,7 @@
             <div class="step-desc">Enriches lead data from 50+ sources</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:0.3s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step">
             <div class="step-num">Step 3</div>
@@ -732,9 +756,7 @@
             <div class="step-desc">Writes personalised video script in 3 sec</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:0.6s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step">
             <div class="step-num">Step 4</div>
@@ -742,9 +764,7 @@
             <div class="step-desc">Renders audio in Thonty's cloned voice</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:0.9s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step">
             <div class="step-num">Step 5</div>
@@ -752,9 +772,7 @@
             <div class="step-desc">Generates avatar video with face + voice</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:1.2s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step">
             <div class="step-num">Step 6</div>
@@ -762,9 +780,7 @@
             <div class="step-desc">Sends email with video thumbnail embedded</div>
           </div>
         </div>
-
-        <div class="pipeline-arrow">→</div>
-
+        <div class="pipeline-arrow" style="animation-delay:1.5s">&rarr;</div>
         <div class="pipeline-step-wrap">
           <div class="pipeline-step blue-step">
             <div class="step-num">Step 7</div>
@@ -772,7 +788,22 @@
             <div class="step-desc">Thonty gets notified the moment they reply</div>
           </div>
         </div>
+      </div>
 
+      <!-- KEY METRICS -->
+      <div class="metric-strip">
+        <div class="metric-card">
+          <div class="metric-num">~$0.50</div>
+          <div class="metric-label">Per Video</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num">3&times;</div>
+          <div class="metric-label">Reply Rate vs Text</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-num">0 min</div>
+          <div class="metric-label">Your Time</div>
+        </div>
       </div>
 
       <div class="callout-pair">
@@ -796,14 +827,14 @@
 
 Hey <span class="placeholder">[First Name]</span>,
 
-I noticed <span class="placeholder">[Company]</span> has 47 reviews on Google — solid reputation for a moving company in Nashville.
+I noticed <span class="placeholder">[Company]</span> has 47 reviews on Google &mdash; solid reputation for a moving company in Nashville.
 
 But I ran a quick check: when someone in Nashville searches for movers on ChatGPT or Google AI, <span class="placeholder">[Company]</span> doesn't come up.
-<span class="thumbnail-line">▶  [SHORT VIDEO THUMBNAIL — "Watch: Your AI Visibility Score"]</span>
+<span class="thumbnail-line">&#9654;  [SHORT VIDEO THUMBNAIL &mdash; "Watch: Your AI Visibility Score"]</span>
 I put together a 60-second breakdown of where you're invisible and what it's worth.
 
 Worth a look?
-— Thonty
+&mdash; Thonty
 Online Optimisers</div>
       <p class="script-note">Every word personalised. Name, city, review count, pain point. Written by Claude in 3 seconds.</p>
     </div>
@@ -817,9 +848,9 @@ Online Optimisers</div>
         <div class="panel">
           <div class="panel-label">Input</div>
           <ul>
-            <li>Voice clone — ElevenLabs API</li>
-            <li>Avatar face — Thonty's likeness</li>
-            <li>Script — written by Claude</li>
+            <li>Voice clone &mdash; ElevenLabs API</li>
+            <li>Avatar face &mdash; Thonty's likeness</li>
+            <li>Script &mdash; written by Claude</li>
             <li>Lead's first name</li>
             <li>Their city</li>
             <li>Their company name</li>
@@ -827,7 +858,7 @@ Online Optimisers</div>
         </div>
         <div class="panel blue-border">
           <div class="panel-label">Output</div>
-          <p>A 60–90 second talking-head video. Your voice. Your face. Their name in the first 3 seconds. Thumbnail auto-generated. Embedded in email.</p>
+          <p>A 60&ndash;90 second talking-head video. Your voice. Your face. Their name in the first 3 seconds. Thumbnail auto-generated. Embedded in email.</p>
         </div>
       </div>
       <div class="panel-stats">
@@ -851,20 +882,21 @@ Online Optimisers</div>
   <section id="slack-section">
     <div class="inner">
       <div class="section-title">When Someone Replies</div>
-      <div class="slack-mock">
-        <div class="slack-header">🔔 Instantly → Slack</div>
+      <div class="slack-mock" id="slackBox1">
+        <button class="slack-copy-btn" onclick="copySlack('slackBox1')">Copy Brief</button>
+        <div class="slack-header">&#128276; Instantly &rarr; Slack</div>
         <div class="slack-msg">
           <strong>Hot reply: Mike Johnson @ Nashville Movers</strong>
           <br><br>
           "Hey man, just watched that. How does this work exactly?"
           <br><br>
-          <span class="tag">✓ INTERESTED</span>
+          <span class="tag">&#10003; INTERESTED</span>
           &nbsp;
           <span class="tag blue-tag">Suggested: Book 15-min call</span>
           <br><br>
-          <strong>Reply drafted:</strong> "Hey Mike! Great to hear from you. Let's jump on a quick 15-minute call — I'll show you exactly where you're invisible and what we'd do about it. Here's my calendar: [link]"
+          <strong>Reply drafted:</strong> "Hey Mike! Great to hear from you. Let's jump on a quick 15-minute call &mdash; I'll show you exactly where you're invisible and what we'd do about it. Here's my calendar: [link]"
         </div>
-        <a class="slack-btn">Open in Instantly →</a>
+        <a class="slack-btn">Open in Instantly &rarr;</a>
       </div>
     </div>
   </section>
@@ -874,61 +906,54 @@ Online Optimisers</div>
     <div class="inner">
       <div class="section-title">What's Under the Hood</div>
       <div class="tools-grid">
-
         <div class="tool-card">
           <div class="tool-name">Airtable</div>
-          <div class="tool-role">Lead database — source of truth</div>
+          <div class="tool-role">Lead database &mdash; source of truth</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">Free / paid</span>
           </div>
         </div>
-
         <div class="tool-card">
           <div class="tool-name">Clay</div>
           <div class="tool-role">Lead enrichment (50+ data sources)</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">~$149/mo</span>
           </div>
         </div>
-
         <div class="tool-card">
           <div class="tool-name">Claude API</div>
-          <div class="tool-role">Script writer — personalised per lead</div>
+          <div class="tool-role">Script writer &mdash; personalised per lead</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">~$0.01/script</span>
           </div>
         </div>
-
         <div class="tool-card">
           <div class="tool-name">ElevenLabs</div>
-          <div class="tool-role">Voice cloning — sounds exactly like you</div>
+          <div class="tool-role">Voice cloning &mdash; sounds exactly like you</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">~$0.10/min audio</span>
           </div>
         </div>
-
         <div class="tool-card">
           <div class="tool-name">HeyGen</div>
-          <div class="tool-role">Avatar video generation — your face</div>
+          <div class="tool-role">Avatar video generation &mdash; your face</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">~$0.30/video</span>
           </div>
         </div>
-
         <div class="tool-card">
           <div class="tool-name">Instantly</div>
           <div class="tool-role">Email delivery + reply tracking</div>
           <div class="tool-meta">
-            <span class="api-badge">✓ API</span>
+            <span class="api-badge">&#10003; API</span>
             <span class="cost-note">$37/mo</span>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -938,31 +963,27 @@ Online Optimisers</div>
     <div class="inner">
       <div class="section-title">Build Sequence</div>
       <div class="build-steps">
-
         <div class="build-step">
           <div class="build-num">1</div>
           <div class="build-text">
             Set up voice clone in ElevenLabs
-            <span>One-time setup. Takes ~30 minutes. You record a few minutes of clean audio — ElevenLabs does the rest.</span>
+            <span>One-time setup. Takes ~30 minutes. You record a few minutes of clean audio &mdash; ElevenLabs does the rest.</span>
           </div>
         </div>
-
         <div class="build-step">
           <div class="build-num">2</div>
           <div class="build-text">
-            Connect Airtable → Clay → Claude → ElevenLabs → HeyGen in n8n
+            Connect Airtable &rarr; Clay &rarr; Claude &rarr; ElevenLabs &rarr; HeyGen in n8n
             <span>Donal sets this up. The workflow triggers automatically whenever a lead is added to Airtable.</span>
           </div>
         </div>
-
         <div class="build-step">
           <div class="build-num">3</div>
           <div class="build-text">
-            Add a lead to Airtable → video in their inbox in 20 minutes
-            <span>Once live, the full pipeline — enrich, script, voice, video, send — runs without you touching it.</span>
+            Add a lead to Airtable &rarr; video in their inbox in 20 minutes
+            <span>Once live, the full pipeline &mdash; enrich, script, voice, video, send &mdash; runs without you touching it.</span>
           </div>
         </div>
-
       </div>
 
       <div class="cta-callout">
@@ -972,10 +993,35 @@ Online Optimisers</div>
     </div>
   </section>
 
+  <!-- PAGE NAV -->
+  <div class="page-nav">
+    <a href="thonty-auto-linkedin-nurture.html" class="pn-link pn-prev">
+      <span class="pn-dir">&larr; Previous</span>
+      <span class="pn-name">LinkedIn Nurture Sequencer</span>
+    </a>
+    <a href="thonty-automations-overview.html" class="pn-link pn-home">All Automations</a>
+    <a href="thonty-auto-dream100.html" class="pn-link pn-next">
+      <span class="pn-dir">Next &rarr;</span>
+      <span class="pn-name">Dream 100 Engine</span>
+    </a>
+  </div>
+
   <!-- FOOTER -->
   <footer>
     Online Optimisers &middot; AI Video Outreach &middot; 2026
   </footer>
+
+  <script>
+  function copySlack(id) {
+    const box = document.getElementById(id);
+    const text = box.innerText.replace('Copy Brief', '').trim();
+    navigator.clipboard.writeText(text).then(function() {
+      const btn = box.querySelector('.slack-copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy Brief'; }, 2000);
+    });
+  }
+  </script>
 
 </body>
 </html>
