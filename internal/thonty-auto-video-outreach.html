@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Video Outreach Pipeline — Online Optimisers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #005DE0;
+      --navy: #072F60;
+      --accent: #1555FC;
+      --bg: #060f1e;
+      --surface: #0d1e35;
+      --surface2: #0f2540;
+      --slate: #1a2e4a;
+      --muted: #8ba3be;
+      --light: #c8d8e8;
+      --white: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      background: rgba(6, 15, 30, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+
+    nav a.back {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    nav a.back:hover { color: var(--white); }
+
+    nav .nav-centre {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    nav .brand {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── SHARED ── */
+    .inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--white);
+      padding-left: 16px;
+      border-left: 4px solid var(--blue);
+      margin-bottom: 40px;
+      line-height: 1.3;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      padding: 96px 0 80px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,93,224,0.18) 0%, transparent 70%);
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(0,93,224,0.25);
+      border: 1px solid rgba(0,93,224,0.6);
+      color: #5ba3ff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 32px;
+    }
+
+    .hero-headline {
+      font-size: 46px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-headline .blue {
+      color: #4d97ff;
+      display: block;
+    }
+
+    .hero-subline {
+      margin-top: 24px;
+      font-size: 18px;
+      color: var(--muted);
+      font-weight: 500;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── THE PROBLEM ── */
+    #problem {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .problem-card {
+      background: var(--slate);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 32px 36px;
+      font-size: 17px;
+      color: var(--light);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .problem-callout {
+      margin-top: 28px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ── PIPELINE ── */
+    #pipeline {}
+
+    .pipeline-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 12px;
+    }
+
+    .pipeline-step-wrap {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .pipeline-step {
+      background: var(--slate);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+      width: 110px;
+      flex-shrink: 0;
+    }
+
+    .pipeline-step.blue-step {
+      background: rgba(0,93,224,0.22);
+      border-color: rgba(0,93,224,0.5);
+    }
+
+    .step-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .step-tool {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .pipeline-arrow {
+      color: var(--muted);
+      font-size: 18px;
+      padding: 0 6px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .callout-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 36px;
+    }
+
+    .callout-box {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 24px 28px;
+    }
+
+    .callout-box.blue-border { border-color: var(--blue); }
+    .callout-box.accent-border { border-color: var(--accent); }
+
+    .callout-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .callout-box p {
+      font-size: 15px;
+      color: var(--light);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    /* ── SCRIPT ── */
+    #script {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .code-box {
+      background: #07111f;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 32px 36px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #a8c4e0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-box .subject-line {
+      color: #5ba3ff;
+      font-weight: 700;
+    }
+
+    .code-box .placeholder {
+      color: #ffb347;
+    }
+
+    .code-box .thumbnail-line {
+      display: block;
+      background: rgba(0,93,224,0.15);
+      border: 1px solid rgba(0,93,224,0.35);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin: 12px 0;
+      color: #5ba3ff;
+      font-style: italic;
+    }
+
+    .script-note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* ── VIDEO ── */
+    #video {}
+
+    .two-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .panel.blue-border { border-color: var(--blue); }
+
+    .panel-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .panel ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .panel ul li {
+      font-size: 14px;
+      color: var(--light);
+      font-weight: 500;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel ul li:last-child { border-bottom: none; }
+
+    .panel ul li::before {
+      content: '→';
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .panel p {
+      font-size: 15px;
+      color: var(--light);
+      font-weight: 500;
+      line-height: 1.7;
+    }
+
+    .panel-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 36px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .panel-stat {
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 20px 12px;
+    }
+
+    .panel-stat .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .panel-stat .lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── SLACK ── */
+    #slack-section {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .slack-mock {
+      background: #1a1d21;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 600px;
+    }
+
+    .slack-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7c9db5;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .slack-msg {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #c9d4dd;
+      font-weight: 500;
+    }
+
+    .slack-msg strong {
+      color: var(--white);
+      font-weight: 800;
+    }
+
+    .slack-msg .tag {
+      display: inline-block;
+      background: rgba(0, 200, 100, 0.15);
+      color: #4cd988;
+      border: 1px solid rgba(0,200,100,0.25);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      margin: 4px 0;
+    }
+
+    .slack-msg .tag.blue-tag {
+      background: rgba(0,93,224,0.15);
+      color: #5ba3ff;
+      border-color: rgba(0,93,224,0.3);
+    }
+
+    .slack-btn {
+      display: inline-block;
+      margin-top: 16px;
+      background: rgba(0,93,224,0.2);
+      border: 1px solid rgba(0,93,224,0.4);
+      color: #5ba3ff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: default;
+    }
+
+    /* ── TOOLS ── */
+    #tools {}
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 22px 20px;
+      transition: border-color 0.2s;
+    }
+
+    .tool-card:hover {
+      border-color: rgba(0,93,224,0.4);
+    }
+
+    .tool-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .tool-role {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .tool-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .api-badge {
+      background: rgba(0,200,100,0.1);
+      border: 1px solid rgba(0,200,100,0.25);
+      color: #4cd988;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .cost-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ── BUILD ── */
+    #build {
+      background: var(--surface);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .build-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .build-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      background: var(--slate);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 24px 28px;
+    }
+
+    .build-num {
+      font-size: 40px;
+      font-weight: 800;
+      color: rgba(0,93,224,0.4);
+      line-height: 1;
+      min-width: 48px;
+      flex-shrink: 0;
+    }
+
+    .build-text {
+      font-size: 17px;
+      color: var(--white);
+      font-weight: 700;
+      line-height: 1.5;
+      padding-top: 6px;
+    }
+
+    .build-text span {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .cta-callout {
+      background: var(--blue);
+      border-radius: 12px;
+      padding: 28px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.92);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .cta-callout strong {
+      color: var(--white);
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 24px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .hero-headline { font-size: 32px; }
+      .stats-row { gap: 28px; }
+      .callout-pair { grid-template-columns: 1fr; }
+      .two-panel { grid-template-columns: 1fr; }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      nav .nav-centre { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="thonty-automations-overview.html" class="back">← Back to Overview</a>
+    <div class="nav-centre">🎬 AI Video Outreach</div>
+    <div class="brand">Online Optimisers</div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="inner">
+      <div class="pill">Outreach Automation</div>
+      <h1 class="hero-headline">
+        Personalised AI Video
+        <span class="blue">Sent to 100 Leads. Without Recording Once.</span>
+      </h1>
+      <p class="hero-subline">Your voice. Your face. Their name. Their city. Their pain point. Sent automatically.</p>
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-number">~$0.50</div>
+          <div class="stat-label">Per Video</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">3×</div>
+          <div class="stat-label">Reply Rate vs Text</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Minutes of Your Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <section id="problem">
+    <div class="inner">
+      <div class="section-title">The Old Way</div>
+      <div class="problem-card">
+        Recording personalised videos for outreach takes 3 minutes per lead. 100 leads = 5 hours. So it never happens. You send the same generic email as everyone else — the same subject line, the same opener, the same pitch they've seen a hundred times. And you wonder why no one replies.
+      </div>
+      <p class="problem-callout">The ones who personalise win.<br>The ones who can do it at scale dominate.</p>
+    </div>
+  </section>
+
+  <!-- THE PIPELINE -->
+  <section id="pipeline">
+    <div class="inner">
+      <div class="section-title">How It Works</div>
+
+      <div class="pipeline-flow">
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step blue-step">
+            <div class="step-num">Step 1</div>
+            <div class="step-tool">Airtable</div>
+            <div class="step-desc">Lead added with name, company, niche, city</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step">
+            <div class="step-num">Step 2</div>
+            <div class="step-tool">Clay</div>
+            <div class="step-desc">Enriches lead data from 50+ sources</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step">
+            <div class="step-num">Step 3</div>
+            <div class="step-tool">Claude API</div>
+            <div class="step-desc">Writes personalised video script in 3 sec</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step">
+            <div class="step-num">Step 4</div>
+            <div class="step-tool">ElevenLabs</div>
+            <div class="step-desc">Renders audio in Thonty's cloned voice</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step">
+            <div class="step-num">Step 5</div>
+            <div class="step-tool">HeyGen</div>
+            <div class="step-desc">Generates avatar video with face + voice</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step">
+            <div class="step-num">Step 6</div>
+            <div class="step-tool">Instantly</div>
+            <div class="step-desc">Sends email with video thumbnail embedded</div>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-step-wrap">
+          <div class="pipeline-step blue-step">
+            <div class="step-num">Step 7</div>
+            <div class="step-tool">Slack Alert</div>
+            <div class="step-desc">Thonty gets notified the moment they reply</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout-pair">
+        <div class="callout-box blue-border">
+          <div class="callout-label">What Thonty does</div>
+          <p>Add the lead to Airtable with their name, company, niche, and city. That's it.</p>
+        </div>
+        <div class="callout-box accent-border">
+          <div class="callout-label">What Claude does</div>
+          <p>Everything else. Research, script, voice, video, send, track.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE SCRIPT -->
+  <section id="script">
+    <div class="inner">
+      <div class="section-title">What Claude Writes</div>
+      <div class="code-box"><span class="subject-line">Subject: Quick question, <span class="placeholder">[First Name]</span></span>
+
+Hey <span class="placeholder">[First Name]</span>,
+
+I noticed <span class="placeholder">[Company]</span> has 47 reviews on Google — solid reputation for a moving company in Nashville.
+
+But I ran a quick check: when someone in Nashville searches for movers on ChatGPT or Google AI, <span class="placeholder">[Company]</span> doesn't come up.
+<span class="thumbnail-line">▶  [SHORT VIDEO THUMBNAIL — "Watch: Your AI Visibility Score"]</span>
+I put together a 60-second breakdown of where you're invisible and what it's worth.
+
+Worth a look?
+— Thonty
+Online Optimisers</div>
+      <p class="script-note">Every word personalised. Name, city, review count, pain point. Written by Claude in 3 seconds.</p>
+    </div>
+  </section>
+
+  <!-- THE VIDEO -->
+  <section id="video">
+    <div class="inner">
+      <div class="section-title">What HeyGen Builds</div>
+      <div class="two-panel">
+        <div class="panel">
+          <div class="panel-label">Input</div>
+          <ul>
+            <li>Voice clone — ElevenLabs API</li>
+            <li>Avatar face — Thonty's likeness</li>
+            <li>Script — written by Claude</li>
+            <li>Lead's first name</li>
+            <li>Their city</li>
+            <li>Their company name</li>
+          </ul>
+        </div>
+        <div class="panel blue-border">
+          <div class="panel-label">Output</div>
+          <p>A 60–90 second talking-head video. Your voice. Your face. Their name in the first 3 seconds. Thumbnail auto-generated. Embedded in email.</p>
+        </div>
+      </div>
+      <div class="panel-stats">
+        <div class="panel-stat">
+          <div class="num">90 sec</div>
+          <div class="lbl">Video Length</div>
+        </div>
+        <div class="panel-stat">
+          <div class="num">48 hrs</div>
+          <div class="lbl">To Clone Your Voice (one-time)</div>
+        </div>
+        <div class="panel-stat">
+          <div class="num">$0.50</div>
+          <div class="lbl">Per Video at Scale</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT THONTY SEES -->
+  <section id="slack-section">
+    <div class="inner">
+      <div class="section-title">When Someone Replies</div>
+      <div class="slack-mock">
+        <div class="slack-header">🔔 Instantly → Slack</div>
+        <div class="slack-msg">
+          <strong>Hot reply: Mike Johnson @ Nashville Movers</strong>
+          <br><br>
+          "Hey man, just watched that. How does this work exactly?"
+          <br><br>
+          <span class="tag">✓ INTERESTED</span>
+          &nbsp;
+          <span class="tag blue-tag">Suggested: Book 15-min call</span>
+          <br><br>
+          <strong>Reply drafted:</strong> "Hey Mike! Great to hear from you. Let's jump on a quick 15-minute call — I'll show you exactly where you're invisible and what we'd do about it. Here's my calendar: [link]"
+        </div>
+        <a class="slack-btn">Open in Instantly →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS & APIs -->
+  <section id="tools">
+    <div class="inner">
+      <div class="section-title">What's Under the Hood</div>
+      <div class="tools-grid">
+
+        <div class="tool-card">
+          <div class="tool-name">Airtable</div>
+          <div class="tool-role">Lead database — source of truth</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">Free / paid</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-name">Clay</div>
+          <div class="tool-role">Lead enrichment (50+ data sources)</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">~$149/mo</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-name">Claude API</div>
+          <div class="tool-role">Script writer — personalised per lead</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">~$0.01/script</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-name">ElevenLabs</div>
+          <div class="tool-role">Voice cloning — sounds exactly like you</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">~$0.10/min audio</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-name">HeyGen</div>
+          <div class="tool-role">Avatar video generation — your face</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">~$0.30/video</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-name">Instantly</div>
+          <div class="tool-role">Email delivery + reply tracking</div>
+          <div class="tool-meta">
+            <span class="api-badge">✓ API</span>
+            <span class="cost-note">$37/mo</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILD THIS -->
+  <section id="build">
+    <div class="inner">
+      <div class="section-title">Build Sequence</div>
+      <div class="build-steps">
+
+        <div class="build-step">
+          <div class="build-num">1</div>
+          <div class="build-text">
+            Set up voice clone in ElevenLabs
+            <span>One-time setup. Takes ~30 minutes. You record a few minutes of clean audio — ElevenLabs does the rest.</span>
+          </div>
+        </div>
+
+        <div class="build-step">
+          <div class="build-num">2</div>
+          <div class="build-text">
+            Connect Airtable → Clay → Claude → ElevenLabs → HeyGen in n8n
+            <span>Donal sets this up. The workflow triggers automatically whenever a lead is added to Airtable.</span>
+          </div>
+        </div>
+
+        <div class="build-step">
+          <div class="build-num">3</div>
+          <div class="build-text">
+            Add a lead to Airtable → video in their inbox in 20 minutes
+            <span>Once live, the full pipeline — enrich, script, voice, video, send — runs without you touching it.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="cta-callout">
+        <strong>Phase 2 Automation</strong>
+        This is a Phase 2 automation. Start with Dream 100 or Call Coach first. Come back to this one once the basics are live and you've got real replies coming in.
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    Online Optimisers &middot; AI Video Outreach &middot; 2026
+  </footer>
+
+</body>
+</html>

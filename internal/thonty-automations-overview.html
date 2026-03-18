@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thonty's AI Stack — Online Optimisers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #005DE0;
+      --navy: #072F60;
+      --accent: #1555FC;
+      --light-blue: #D5D7FF;
+      --bg: #060f1e;
+      --card-text: rgba(255,255,255,0.75);
+      --muted: rgba(255,255,255,0.45);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      background: var(--bg);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    nav .brand { font-weight: 700; font-size: 15px; color: #fff; letter-spacing: -0.2px; }
+    nav .stack-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 24px 64px;
+      text-align: center;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,93,224,0.18) 0%, transparent 70%);
+    }
+
+    .pill-badge {
+      display: inline-block;
+      background: rgba(0,93,224,0.25);
+      border: 1px solid rgba(0,93,224,0.5);
+      color: var(--light-blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 18px;
+    }
+
+    .hero .subline {
+      font-size: clamp(15px, 2vw, 18px);
+      color: var(--card-text);
+      max-width: 560px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      max-width: 680px;
+      margin: 0 auto 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .stat {
+      flex: 1;
+      padding: 28px 16px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-size: 40px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .hero-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .hero-divider {
+      width: 60px;
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+      margin: 36px auto 20px;
+    }
+
+    /* ── GRID ── */
+    .grid-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px 80px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CARD ── */
+    .card {
+      border-radius: 16px;
+      padding: 22px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid rgba(255,255,255,0.06);
+      text-decoration: none;
+      color: inherit;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 1px rgba(0,93,224,0.55), 0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    .card-bg-1  { background: linear-gradient(135deg, #072F60 0%, #005DE0 100%); }
+    .card-bg-2  { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); }
+    .card-bg-3  { background: linear-gradient(135deg, #1a1033 0%, #2d1b6b 100%); }
+    .card-bg-4  { background: linear-gradient(135deg, #0c1f3f 0%, #004a8f 100%); }
+    .card-bg-5  { background: linear-gradient(135deg, #0f2027 0%, #203a43 100%); }
+    .card-bg-6  { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+    .card-bg-7  { background: linear-gradient(135deg, #0d1b2a 0%, #1a3558 100%); }
+    .card-bg-8  { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+    .card-bg-9  { background: linear-gradient(135deg, #0f172a 0%, #1e2d3d 100%); }
+    .card-bg-10 { background: linear-gradient(135deg, #06214f 0%, #1555FC 100%); }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .card-emoji { font-size: 26px; line-height: 1; }
+    .card-num {
+      font-size: 36px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.1);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .tools-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+    }
+    .tool-pill {
+      background: rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .arrow {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .card-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 0;
+    }
+
+    .card-roles { display: flex; flex-direction: column; gap: 7px; }
+    .role-row { font-size: 12px; line-height: 1.5; }
+    .role-label {
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.8px;
+      margin-right: 4px;
+    }
+    .role-you .role-label { color: var(--muted); }
+    .role-you .role-text  { color: rgba(255,255,255,0.65); }
+    .role-claude .role-label { color: var(--light-blue); }
+    .role-claude .role-text  { color: var(--light-blue); }
+
+    .card-hook {
+      background: rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #fbbf24;
+      line-height: 1.45;
+      margin-top: auto;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: linear-gradient(135deg, #060f1e 0%, #072F60 60%, #005DE0 100%);
+      padding: 72px 24px 64px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .cta-section p {
+      font-size: 16px;
+      color: var(--card-text);
+      margin-bottom: 36px;
+    }
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 14px 24px;
+      border: 1.5px solid rgba(0,93,224,0.6);
+      border-radius: 10px;
+      background: rgba(0,93,224,0.12);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      font-family: 'Manrope', sans-serif;
+    }
+    .cta-btn:hover {
+      background: rgba(0,93,224,0.3);
+      border-color: rgba(0,93,224,0.9);
+      transform: translateY(-2px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="brand">Online Optimisers</span>
+    <span class="stack-label">Thonty's AI Stack</span>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="pill-badge">SALES AUTOMATION STACK</div>
+    <h1>Your AI Sales Machine</h1>
+    <p class="subline">10 automations. Built with Claude + APIs. You run the calls. The system runs everything else.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Automations Ready to Build</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">~$0</div>
+        <div class="stat-label">Cost When You're on the Call</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">&#x221E;</div>
+        <div class="stat-label">Leads It Can Process in Parallel</div>
+      </div>
+    </div>
+    <div class="hero-divider"></div>
+    <p class="hero-hint">Click any card to learn more</p>
+  </section>
+
+  <!-- CARDS GRID -->
+  <section class="grid-section">
+    <div class="cards-grid">
+
+      <!-- 01 -->
+      <a class="card card-bg-1" href="thonty-auto-video-outreach.html">
+        <div class="card-header">
+          <span class="card-emoji">🎬</span>
+          <span class="card-num">01</span>
+        </div>
+        <div class="card-name">AI Video Outreach</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Airtable</span><span class="arrow">→</span>
+          <span class="tool-pill">Clay</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">ElevenLabs</span><span class="arrow">→</span>
+          <span class="tool-pill">HeyGen</span><span class="arrow">→</span>
+          <span class="tool-pill">Instantly</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Approve the target list</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Writes the script, clones your voice, generates the avatar video, sends the email</span></div>
+        </div>
+        <div class="card-hook">~$0.50/video. 3× reply rate vs text.</div>
+      </a>
+
+      <!-- 02 -->
+      <a class="card card-bg-2" href="thonty-auto-dream100.html">
+        <div class="card-header">
+          <span class="card-emoji">🎯</span>
+          <span class="card-num">02</span>
+        </div>
+        <div class="card-name">Dream 100 Engine</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Apollo</span><span class="arrow">→</span>
+          <span class="tool-pill">DataForSEO</span><span class="arrow">→</span>
+          <span class="tool-pill">Hunter</span><span class="arrow">→</span>
+          <span class="tool-pill">Clay</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Instantly</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Type a niche and city</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Scrapes, enriches, scores 100 leads, writes personalised openers, queues in Instantly</span></div>
+        </div>
+        <div class="card-hook">50 warm prospects with custom first lines — 30 min.</div>
+      </a>
+
+      <!-- 03 -->
+      <a class="card card-bg-3" href="thonty-auto-call-coach.html">
+        <div class="card-header">
+          <span class="card-emoji">🧠</span>
+          <span class="card-num">03</span>
+        </div>
+        <div class="card-name">Call Intelligence Coach</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Fathom</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Slack</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Take the call</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Scores your performance across 8 dimensions, writes coaching brief, suggests role-play scenarios</span></div>
+        </div>
+        <div class="card-hook">Every call makes you sharper. Automatically.</div>
+      </a>
+
+      <!-- 04 -->
+      <a class="card card-bg-4" href="#">
+        <div class="card-header">
+          <span class="card-emoji">⚡</span>
+          <span class="card-num">04</span>
+        </div>
+        <div class="card-name">Speed-to-Lead Responder</div>
+        <div class="tools-flow">
+          <span class="tool-pill">GHL Form</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Twilio</span><span class="arrow">→</span>
+          <span class="tool-pill">Instantly</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Get the alert when they're ready to talk</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Responds to inbound leads by SMS and email within 90 seconds, nurtures until they book</span></div>
+        </div>
+        <div class="card-hook">First to respond wins. You respond in 90 seconds while sleeping.</div>
+      </a>
+
+      <!-- 05 -->
+      <a class="card card-bg-5" href="#">
+        <div class="card-header">
+          <span class="card-emoji">🔍</span>
+          <span class="card-num">05</span>
+        </div>
+        <div class="card-name">"Why Now" Trigger Detector</div>
+        <div class="tools-flow">
+          <span class="tool-pill">DataForSEO</span><span class="arrow">→</span>
+          <span class="tool-pill">GBP API</span><span class="arrow">→</span>
+          <span class="tool-pill">Apollo</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Slack</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Receive the alert with the angle</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Monitors your lead list for trigger events — bad reviews, new locations, hiring ads, site changes</span></div>
+        </div>
+        <div class="card-hook">Know exactly when a lead is ready to hear from you.</div>
+      </a>
+
+      <!-- 06 -->
+      <a class="card card-bg-6" href="#">
+        <div class="card-header">
+          <span class="card-emoji">📊</span>
+          <span class="card-num">06</span>
+        </div>
+        <div class="card-name">Competitor Intelligence Deck</div>
+        <div class="tools-flow">
+          <span class="tool-pill">DataForSEO</span><span class="arrow">→</span>
+          <span class="tool-pill">SE Ranking</span><span class="arrow">→</span>
+          <span class="tool-pill">Drive</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Canva</span><span class="arrow">→</span>
+          <span class="tool-pill">Airtable</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Enter the lead's domain</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Pulls competitor data, matches a case study, builds a branded comparison deck, drops link in Airtable</span></div>
+        </div>
+        <div class="card-hook">Full competitive deck ready before the discovery call.</div>
+      </a>
+
+      <!-- 07 -->
+      <a class="card card-bg-7" href="#">
+        <div class="card-header">
+          <span class="card-emoji">📬</span>
+          <span class="card-num">07</span>
+        </div>
+        <div class="card-name">Inbox Triage &amp; Reply Drafter</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Instantly</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Slack</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Approve and send</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Reads every reply, classifies (hot/warm/objection/dead), drafts the perfect response per type</span></div>
+        </div>
+        <div class="card-hook">No more staring at a reply wondering what to say.</div>
+      </a>
+
+      <!-- 08 -->
+      <a class="card card-bg-8" href="#">
+        <div class="card-header">
+          <span class="card-emoji">📋</span>
+          <span class="card-num">08</span>
+        </div>
+        <div class="card-name">Pre-Call Brief Generator</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Google Calendar</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Perplexity</span><span class="arrow">→</span>
+          <span class="tool-pill">Slack</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Walk into the call prepared</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Detects upcoming calls, researches the prospect (website, GBP, reviews, pain points), delivers brief 30 min before</span></div>
+        </div>
+        <div class="card-hook">Never go into a call cold again.</div>
+      </a>
+
+      <!-- 09 -->
+      <a class="card card-bg-9" href="#">
+        <div class="card-header">
+          <span class="card-emoji">🔄</span>
+          <span class="card-num">09</span>
+        </div>
+        <div class="card-name">Reactivation Engine</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Airtable</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">Perplexity</span><span class="arrow">→</span>
+          <span class="tool-pill">Instantly</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Approve the reactivation batch</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Finds 60–90 day cold leads, detects new trigger events, writes a fresh personalised angle for each</span></div>
+        </div>
+        <div class="card-hook">Dead leads aren't dead. They just need the right moment.</div>
+      </a>
+
+      <!-- 10 -->
+      <a class="card card-bg-10" href="#">
+        <div class="card-header">
+          <span class="card-emoji">🤖</span>
+          <span class="card-num">10</span>
+        </div>
+        <div class="card-name">LinkedIn Nurture Sequencer</div>
+        <div class="tools-flow">
+          <span class="tool-pill">LinkedIn</span><span class="arrow">→</span>
+          <span class="tool-pill">n8n</span><span class="arrow">→</span>
+          <span class="tool-pill">Claude</span><span class="arrow">→</span>
+          <span class="tool-pill">PhantomBuster</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU:</span><span class="role-text">Accept the connection</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE:</span><span class="role-text">Writes and schedules a personalised multi-touch message sequence based on their profile and niche</span></div>
+        </div>
+        <div class="card-hook">200 LinkedIn conversations running in parallel. You close the ones that respond.</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to Build?</h2>
+    <p>Start with the top 3. Pick the one that excites you most.</p>
+    <div class="cta-buttons">
+      <a href="thonty-auto-video-outreach.html" class="cta-btn">🎬 AI Video Outreach &rarr;</a>
+      <a href="thonty-auto-dream100.html" class="cta-btn">🎯 Dream 100 Engine &rarr;</a>
+      <a href="thonty-auto-call-coach.html" class="cta-btn">🧠 Call Coach &rarr;</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    Online Optimisers &middot; Thonty's AI Stack &middot; 2026
+  </footer>
+
+</body>
+</html>

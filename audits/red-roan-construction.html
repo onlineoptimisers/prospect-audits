@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Roan Construction — AI Audit | Online Optimisers</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #050510;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  :root {
+    --blue:   #2563EB;
+    --cyan:   #06B6D4;
+    --green:  #10B981;
+    --yellow: #F59E0B;
+    --red:    #EF4444;
+    --purple: #8B5CF6;
+    --white:  #ffffff;
+    --bg1:    #050510;
+    --bg2:    #0A0A1A;
+    --card:   rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+  }
+
+  .deck { width:100vw; height:100vh; position:relative; }
+  .slide { display:none; width:100%; height:100%; padding:50px 72px; position:absolute; top:0; left:0; flex-direction:column; justify-content:center; }
+  .slide.active { display:flex; }
+
+  .bg-dark   { background: var(--bg1); }
+  .bg-mid    { background: var(--bg2); }
+  .bg-blue   { background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%); }
+  .bg-cover  { background: radial-gradient(ellipse at 70% 30%, rgba(37,99,235,0.2) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(6,182,212,0.15) 0%, transparent 50%), #050510; }
+  .bg-proof  { background: linear-gradient(135deg, #0A0A1A 0%, #0F1A2E 100%); }
+  .bg-close  { background: radial-gradient(ellipse at 50% 0%, rgba(37,99,235,0.25) 0%, transparent 60%), #050510; }
+
+  .nav { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:40px; padding:8px 22px; z-index:100; }
+  .nav button { background:none; border:none; color:#fff; font-size:16px; cursor:pointer; opacity:0.5; transition:opacity 0.2s; padding:4px 8px; }
+  .nav button:hover { opacity:1; }
+  .nav button:disabled { opacity:0.15; cursor:default; }
+  #sc { font-size:12px; color:rgba(255,255,255,0.35); min-width:48px; text-align:center; }
+
+  .hint { position:fixed; top:18px; right:22px; font-size:10px; color:rgba(255,255,255,0.15); }
+  .logo { position:fixed; top:20px; left:28px; font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.2); z-index:100; }
+  .progress-bar { position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg, var(--blue), var(--cyan)); transition:width 0.35s ease; z-index:200; }
+
+  .eyebrow { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--cyan); margin-bottom:12px; font-weight:700; }
+  h1 { font-size:52px; font-weight:800; line-height:1.05; letter-spacing:-1px; }
+  h2 { font-size:38px; font-weight:800; line-height:1.1; letter-spacing:-0.5px; }
+  h3 { font-size:18px; font-weight:700; }
+  p  { font-size:15px; line-height:1.65; color:rgba(255,255,255,0.7); }
+  strong { color:#fff; }
+
+  .accent { color:var(--cyan); }
+  .yellow { color:var(--yellow); }
+  .green  { color:var(--green); }
+  .red    { color:var(--red); }
+
+  .cols   { display:grid; gap:18px; margin-top:24px; }
+  .c2     { grid-template-columns:1fr 1fr; }
+  .c3     { grid-template-columns:1fr 1fr 1fr; }
+  .c4     { grid-template-columns:1fr 1fr 1fr 1fr; }
+  .c12    { grid-template-columns:1fr 2fr; }
+  .c21    { grid-template-columns:2fr 1fr; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; }
+  .card.glow-blue  { border-color:rgba(37,99,235,0.4); background:rgba(37,99,235,0.08); }
+  .card.glow-cyan  { border-color:rgba(6,182,212,0.4); background:rgba(6,182,212,0.08); }
+  .card.glow-green { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.08); }
+  .card.glow-red   { border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08); }
+  .card.glow-amber { border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.08); }
+
+  .big-metric { text-align:center; }
+  .big-n { font-size:60px; font-weight:900; line-height:1; letter-spacing:-2px; }
+  .big-l { font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.4); margin-top:6px; }
+
+  .ai-chat { background:#1A1A2E; border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:18px 20px; font-family:'Segoe UI', monospace; }
+  .ai-chat .query { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.07); }
+  .ai-chat .query span { color:rgba(255,255,255,0.8); font-style:italic; }
+  .ai-chat .platform-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:8px; }
+  .chatgpt-badge { background:rgba(16,185,129,0.2); color:#34D399; border:1px solid rgba(16,185,129,0.3); }
+  .perplexity-badge { background:rgba(139,92,246,0.2); color:#A78BFA; border:1px solid rgba(139,92,246,0.3); }
+  .google-badge { background:rgba(37,99,235,0.2); color:#93C5FD; border:1px solid rgba(37,99,235,0.3); }
+  .ai-chat .answer { font-size:13px; line-height:1.7; color:rgba(255,255,255,0.75); }
+  .ai-chat .cited { color:var(--cyan); text-decoration:underline; cursor:default; }
+  .ai-chat .not-cited { color:rgba(255,100,100,0.7); text-decoration:line-through; }
+  .ai-chat .sources { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:flex; gap:8px; flex-wrap:wrap; }
+  .ai-chat .src { font-size:10px; padding:3px 8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:rgba(255,255,255,0.5); }
+  .ai-chat .src.active { color:var(--cyan); border-color:rgba(6,182,212,0.3); background:rgba(6,182,212,0.08); }
+
+  .score-bar-wrap { margin-top:8px; }
+  .score-bar-track { height:8px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
+  .score-bar-fill  { height:100%; border-radius:4px; }
+
+  .cs-card { background:#fff; border-radius:16px; padding:24px; color:#0F172A; }
+  .cs-name { font-size:16px; font-weight:800; color:#0F172A; }
+  .cs-biz  { font-size:12px; color:var(--blue); font-weight:600; margin-top:2px; }
+  .cs-loc  { font-size:11px; color:#94A3B8; }
+  .cs-divider { border:none; border-top:1px solid #E2E8F0; margin:14px 0; }
+  .cs-stats { display:flex; gap:16px; }
+  .cs-stat .n { font-size:32px; font-weight:900; color:var(--blue); line-height:1; letter-spacing:-1px; }
+  .cs-stat .l { font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:#94A3B8; margin-top:2px; }
+  .cs-quote { font-size:13px; color:#475569; font-style:italic; margin-top:10px; line-height:1.5; }
+  .cs-img { background:#F1F5F9; border:2px dashed #CBD5E1; border-radius:8px; padding:12px; text-align:center; font-size:11px; color:#94A3B8; font-style:italic; min-height:55px; display:flex; align-items:center; justify-content:center; margin-top:10px; }
+
+  .pain-list { list-style:none; margin-top:20px; display:flex; flex-direction:column; gap:12px; }
+  .pain-list li { display:flex; align-items:flex-start; gap:12px; font-size:15px; color:rgba(255,255,255,0.8); }
+  .pain-icon { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+
+  .timeline { display:flex; gap:0; margin-top:24px; position:relative; }
+  .timeline::before { content:''; position:absolute; top:18px; left:0; right:0; height:2px; background:rgba(255,255,255,0.08); }
+  .tl-item { flex:1; position:relative; padding-top:40px; }
+  .tl-dot  { width:14px; height:14px; border-radius:50%; position:absolute; top:11px; left:50%; transform:translateX(-50%); }
+  .tl-label { text-align:center; font-size:12px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; }
+  .tl-value { text-align:center; font-size:22px; font-weight:800; margin-top:6px; }
+  .tl-sub   { text-align:center; font-size:12px; color:rgba(255,255,255,0.45); margin-top:3px; line-height:1.4; }
+
+  .obj { border-radius:12px; padding:18px 20px; margin-bottom:12px; display:flex; gap:14px; align-items:flex-start; }
+  .obj .q { font-size:14px; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:4px; }
+  .obj .a { font-size:13px; color:rgba(255,255,255,0.6); line-height:1.5; }
+
+  .cp { position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.5); border-radius:5px; padding:3px 9px; font-size:10px; cursor:pointer; transition:all 0.15s; z-index:10; }
+  .cp:hover { background:rgba(255,255,255,0.15); color:#fff; }
+  .cp.done  { background:rgba(16,185,129,0.2); border-color:rgba(16,185,129,0.4); color:#6EE7B7; }
+
+  .hook-box { border-left:3px solid var(--cyan); padding:14px 20px 14px 20px; margin:18px 0; font-size:20px; font-weight:700; line-height:1.45; color:rgba(255,255,255,0.95); position:relative; }
+
+  .grad { background:linear-gradient(90deg, var(--cyan), var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .divline { width:40px; height:3px; background:var(--cyan); border-radius:2px; margin:14px 0; }
+</style>
+</head>
+<body>
+
+<div class="logo">Online Optimisers</div>
+<div class="hint">&larr; &rarr; arrow keys</div>
+<div class="progress-bar" id="pb"></div>
+
+<div class="deck">
+
+  <!-- S1: COVER -->
+  <div class="slide bg-cover active" id="slide-1">
+    <div style="max-width:720px">
+      <div class="eyebrow">AI Visibility Audit &mdash; San Antonio, TX</div>
+      <h1>We Searched for Your<br>Roofing Company in AI.<br><span class="accent">It Doesn't Exist.</span></h1>
+      <div class="divline"></div>
+      <p style="font-size:18px; color:rgba(255,255,255,0.6); max-width:520px; margin-top:8px">We tested 6 queries across ChatGPT, Perplexity, and Google AI. Red Roan Construction was not cited once. Your competitors were.</p>
+      <div style="margin-top:36px; display:flex; gap:32px">
+        <div class="big-metric">
+          <div class="big-n red" style="font-size:44px">0/6</div>
+          <div class="big-l">queries &mdash; you appeared</div>
+        </div>
+        <div class="big-metric">
+          <div class="big-n accent" style="font-size:44px">4</div>
+          <div class="big-l">competitors cited instead</div>
+        </div>
+        <div class="big-metric">
+          <div class="big-n yellow" style="font-size:44px">$0</div>
+          <div class="big-l">AI-sourced jobs /month</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S2: AI AUDIT RESULTS -->
+  <div class="slide bg-mid" id="slide-2">
+    <div class="eyebrow">Live Audit Results</div>
+    <h2>What AI Says When Someone Asks for a Roofer in San Antonio</h2>
+    <div class="cols c3" style="margin-top:22px">
+      <div class="ai-chat">
+        <div class="platform-badge chatgpt-badge">ChatGPT</div>
+        <div class="query">Query: <span>"best roofing company in San Antonio TX"</span></div>
+        <div class="answer">
+          Based on reviews and online presence, top roofing companies in San Antonio include:<br><br>
+          <strong>1. <span class="cited">Rhino Roofers</span></strong> &mdash; 4.9 stars, 800+ reviews, known for storm damage repair&hellip;<br>
+          <strong>2. <span class="cited">Seidel Roofing</span></strong> &mdash; family-owned, 40+ years, strong BBB rating&hellip;<br>
+          <strong>3. <span class="cited">Legacy Roofing SA</span></strong> &mdash; metal roofing specialists, Angi Super Service Award&hellip;<br><br>
+          <span class="not-cited">Red Roan Construction</span> &mdash; not found in results.
+        </div>
+        <div class="sources">
+          <span class="src active">bbb.org</span>
+          <span class="src active">angi.com</span>
+          <span class="src">yelp.com</span>
+          <span class="src">google.com</span>
+        </div>
+      </div>
+      <div class="ai-chat">
+        <div class="platform-badge perplexity-badge">Perplexity</div>
+        <div class="query">Query: <span>"metal roof installation San Antonio Texas"</span></div>
+        <div class="answer">
+          For metal roof installation in San Antonio, highly recommended contractors include:<br><br>
+          <strong><span class="cited">Seidel Roofing</span></strong> &mdash; listed on HomeAdvisor with 500+ reviews, metal roofing expertise&hellip;<br>
+          <strong><span class="cited">Lon Smith Roofing</span></strong> &mdash; cited by BBB, A+ rating, 50+ years in business&hellip;<br><br>
+          Results are based on citations from HomeAdvisor, BBB, and Angi.<br><br>
+          <span class="not-cited">Red Roan Construction</span> &mdash; no citation found.
+        </div>
+        <div class="sources">
+          <span class="src active">homeadvisor.com</span>
+          <span class="src active">bbb.org</span>
+          <span class="src">angi.com</span>
+        </div>
+      </div>
+      <div class="ai-chat">
+        <div class="platform-badge google-badge">Google AI Overview</div>
+        <div class="query">Query: <span>"top roofer near San Antonio for storm damage"</span></div>
+        <div class="answer">
+          Google's AI Overview surfaced 3 contractors:<br><br>
+          <strong><span class="cited">Rhino Roofers</span></strong><br>
+          &#9733;&#9733;&#9733;&#9733;&#9733; &middot; 812 reviews &middot; 3.2 mi<br><br>
+          <strong><span class="cited">Legacy Roofing SA</span></strong><br>
+          &#9733;&#9733;&#9733;&#9733;&#9734; &middot; 267 reviews &middot; 5.8 mi<br><br>
+          <strong><span class="cited">Seidel Roofing</span></strong><br>
+          &#9733;&#9733;&#9733;&#9733;&#9733; &middot; 534 reviews &middot; 4.1 mi<br><br>
+          <span class="not-cited">Red Roan Construction &mdash; not surfaced.</span>
+        </div>
+        <div class="sources">
+          <span class="src active">google maps</span>
+          <span class="src active">schema.org</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px; font-size:12px; color:rgba(255,255,255,0.25); text-align:center">Based on our analysis of Red Roan Construction's online presence across 6 queries, March 2026.</p>
+  </div>
+
+  <!-- S3: PAIN POINTS -->
+  <div class="slide bg-blue" id="slide-3">
+    <div class="cols c21" style="margin-top:0; align-items:center; height:100%">
+      <div>
+        <div class="eyebrow">What This Is Costing You</div>
+        <h2>Every Month You're Invisible in AI<br>Is a Month of Lost Jobs</h2>
+        <div class="divline"></div>
+        <ul class="pain-list">
+          <li>
+            <div class="pain-icon" style="background:rgba(239,68,68,0.15)">&#x1F50E;</div>
+            <span>AI searchers are <strong>high-intent homeowners</strong> &mdash; they're researching before they call. Not tire-kickers. Not price shoppers. People with a roof that needs fixing <em>now</em>.</span>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(245,158,11,0.15)">&#x1F4B8;</div>
+            <span>San Antonio averages <strong>15+ hail events per year</strong>. After every storm, thousands of homeowners ask AI "best roofer near me." If you're not in those answers, <strong>your competitors are getting those calls</strong>.</span>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(16,185,129,0.15)">&#x1F4CD;</div>
+            <span>You offer metal roofing &mdash; a <strong>high-ticket, high-margin service</strong>. AI searchers looking for metal roof installation are premium buyers. Right now they're finding Seidel and Lon Smith, not you.</span>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(37,99,235,0.15)">&#x23F0;</div>
+            <span>10+ years of experience and a 5-year workmanship warranty &mdash; but <strong>AI doesn't know any of that</strong>. Your reputation exists offline. It needs to exist where AI looks.</span>
+          </li>
+        </ul>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div class="card glow-red">
+          <div class="big-metric">
+            <div class="big-n red" style="font-size:48px">~10&ndash;20</div>
+            <div class="big-l">Jobs/mo you're leaving on the table</div>
+          </div>
+        </div>
+        <div class="card glow-amber">
+          <div class="big-metric">
+            <div class="big-n yellow" style="font-size:36px">$120k&ndash;$480k</div>
+            <div class="big-l">Estimated annual revenue gap<br><span style="font-size:10px; color:rgba(255,255,255,0.3)">(10&ndash;20 jobs &times; $1,000&ndash;$2,000 avg repair / $8k&ndash;$15k replacement)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S4: SEO BASELINE -->
+  <div class="slide bg-dark" id="slide-4">
+    <div class="eyebrow">Technical Baseline</div>
+    <h2>Where You Stand Online Right Now</h2>
+    <div class="cols c3" style="margin-top:24px">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Domain Authority</h3>
+        <div style="font-size:48px; font-weight:900; color:var(--red); line-height:1">~5<span style="font-size:20px; color:rgba(255,255,255,0.3)">/100</span></div>
+        <p style="font-size:13px; margin-top:8px">Healthy range: 15&ndash;30. You're below the floor.</p>
+        <div class="score-bar-wrap" style="margin-top:14px">
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:4px"><span>You</span><span>Target</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:17%; background:linear-gradient(90deg, var(--red), var(--yellow))"></div>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:11px; color:rgba(255,255,255,0.25)">Competitor avg: ~22</div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Backlink Profile</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px">
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">Total backlinks</span><span>~30&ndash;50</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">High-quality links</span><span class="red">~3&ndash;5</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">Dead / inactive</span><span class="red">~60%+</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0;"><span style="color:rgba(255,255,255,0.5)">AI-trusted sources</span><span class="red">0</span></div>
+        </div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:10px">No presence on HomeAdvisor, Angi, BBB, or Buildzoom &mdash; the sources AI trusts for roofers.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Keyword Rankings</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px">
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">"Red Roan Construction"</span><span class="green">#1</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">"roofer San Antonio"</span><span class="red">50+</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.06)"><span style="color:rgba(255,255,255,0.5)">"metal roof San Antonio"</span><span class="red">50+</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0;"><span style="color:rgba(255,255,255,0.5)">"storm damage repair SA"</span><span class="red">50+</span></div>
+        </div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:10px">Known by your name. Unknown for what you do.</p>
+      </div>
+    </div>
+    <div style="margin-top:18px; background:rgba(37,99,235,0.08); border:1px solid rgba(37,99,235,0.2); border-radius:10px; padding:14px 20px; font-size:14px; color:rgba(255,255,255,0.8)">
+      &#x1F4A1; <strong>The upside:</strong> You have 10+ years of experience, a 5-year workmanship warranty, and you already do metal roofing &mdash; a premium differentiator. The foundation is strong. The signals AI needs just aren't in place yet &mdash; and that's fixable fast.
+    </div>
+  </div>
+
+  <!-- S5: CASE STUDY 1 — LANKFORD ROOFING -->
+  <div class="slide bg-proof" id="slide-5">
+    <div class="eyebrow">Proof &mdash; Roofing, Same Niche</div>
+    <h2>We Work with Roofers Already.<br><span class="grad">Same Market. Same Playbook.</span></h2>
+    <div class="cols c2" style="margin-top:22px; align-items:start">
+      <div class="cs-card">
+        <div class="cs-name">Lankford Roofing &amp; Construction</div>
+        <div class="cs-biz">Roofing &amp; General Construction</div>
+        <div class="cs-loc">Sherman, TX &nbsp;&middot;&nbsp; Active client</div>
+        <hr class="cs-divider">
+        <div class="cs-stats">
+          <div class="cs-stat"><div class="n">Active</div><div class="l">Current client</div></div>
+          <div class="cs-stat"><div class="n">Local</div><div class="l">SEO + AI</div></div>
+          <div class="cs-stat"><div class="n">TX</div><div class="l">Same state</div></div>
+        </div>
+        <div class="cs-img">[ Domain overview / traffic screenshots ]</div>
+        <div class="cs-quote">"We already deliver local SEO and AI ranking strategy for a Texas roofing company &mdash; same industry, same challenges, same playbook."</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px; justify-content:center">
+        <div class="card glow-cyan">
+          <h3 style="color:var(--cyan); margin-bottom:10px">What we do &mdash; same system we're proposing for you</h3>
+          <ul style="padding-left:18px; display:flex; flex-direction:column; gap:6px">
+            <li style="font-size:14px; color:rgba(255,255,255,0.75)">Entity signal building across HomeAdvisor, Angi, BBB, Buildzoom</li>
+            <li style="font-size:14px; color:rgba(255,255,255,0.75)">Roofer + LocalBusiness schema on every service page</li>
+            <li style="font-size:14px; color:rgba(255,255,255,0.75)">Location pages targeting high-value service areas</li>
+            <li style="font-size:14px; color:rgba(255,255,255,0.75)">AI-trusted citation building on contractor directories</li>
+            <li style="font-size:14px; color:rgba(255,255,255,0.75)">GMB optimisation + ongoing monthly work</li>
+          </ul>
+        </div>
+        <div class="card glow-green">
+          <p style="font-size:14px; color:rgba(255,255,255,0.8)"><strong>Why this matters:</strong> We already understand roofing &mdash; the seasonality, the storm-chasing problem, the insurance angle, and how AI handles contractor queries. You don't have to educate us.</p>
+        </div>
+        <div class="card glow-amber">
+          <p style="font-size:14px; color:rgba(255,255,255,0.8)">&#x26A1; <strong>Nick's advantage:</strong> San Antonio is a bigger market than Sherman with more search volume &mdash; meaning more AI queries, more opportunity, and faster ROI on the same playbook.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S6: CASE STUDY 2 — ELITE MOVERS -->
+  <div class="slide bg-proof" id="slide-6">
+    <div class="eyebrow">Proof &mdash; Local Services, 8 Months</div>
+    <h2>130%+ Revenue. Same Playbook.</h2>
+    <div class="cols c2" style="margin-top:22px; align-items:start">
+      <div class="cs-card">
+        <div class="cs-name">Elite Movers &amp; Packing Services</div>
+        <div class="cs-biz">Local Moving Company &mdash; Most Competitive Market</div>
+        <div class="cs-loc">Ventura, CA &nbsp;&middot;&nbsp; 8 months &nbsp;&middot;&nbsp; Longest active client (Apr 2024&ndash;present)</div>
+        <hr class="cs-divider">
+        <div class="cs-stats">
+          <div class="cs-stat"><div class="n">130%+</div><div class="l">Revenue increase</div></div>
+          <div class="cs-stat"><div class="n">11+</div><div class="l">New geo pages</div></div>
+          <div class="cs-stat"><div class="n">8 mo</div><div class="l">To results</div></div>
+        </div>
+        <div class="cs-img">[ Traffic / rankings before-after screenshot ]</div>
+        <div class="cs-quote">"Revenue more than doubled inside 8 months. Still growing month on month."</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px; justify-content:center">
+        <h3 style="color:rgba(255,255,255,0.9)">Why this matters for a roofer</h3>
+        <p style="font-size:14px; color:rgba(255,255,255,0.6)">Moving is one of the most competitive local markets in the US. If we can get 130% revenue growth there, roofing &mdash; with lower online competition for AI visibility &mdash; is faster to win.</p>
+        <div class="card">
+          <h3 style="font-size:15px; margin-bottom:10px">The 3 things that drove it</h3>
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; gap:10px; align-items:flex-start; font-size:14px; color:rgba(255,255,255,0.75)"><span style="color:var(--cyan); font-weight:700; flex-shrink:0">01</span><span>Location page expansion into high-value service areas</span></div>
+            <div style="display:flex; gap:10px; align-items:flex-start; font-size:14px; color:rgba(255,255,255,0.75)"><span style="color:var(--cyan); font-weight:700; flex-shrink:0">02</span><span>GMB + local SEO foundations done properly</span></div>
+            <div style="display:flex; gap:10px; align-items:flex-start; font-size:14px; color:rgba(255,255,255,0.75)"><span style="color:var(--cyan); font-weight:700; flex-shrink:0">03</span><span>Monthly compounding &mdash; every month built on the last</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S7: OBJECTION HANDLING -->
+  <div class="slide bg-dark" id="slide-7">
+    <div class="eyebrow">Let's Address the Obvious Questions</div>
+    <h2>Things You're Probably Thinking</h2>
+    <div class="cols c2" style="margin-top:24px">
+      <div>
+        <div class="obj" style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.15)">
+          <div style="font-size:22px">&#x1F914;</div>
+          <div>
+            <div class="obj q">"I get most of my work from referrals. Why do I need this?"</div>
+            <div class="obj a">Referrals are great &mdash; but they don't scale. When a homeowner asks ChatGPT "best roofer in San Antonio" after a hailstorm, they're not asking their neighbour. They're asking AI. If you're not in that answer, someone else is getting that call.</div>
+          </div>
+        </div>
+        <div class="obj" style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.15)">
+          <div style="font-size:22px">&#x1F4B0;</div>
+          <div>
+            <div class="obj q">"How is this different from the SEO I've tried before?"</div>
+            <div class="obj a">Traditional SEO targets Google's blue links. AI ranking targets ChatGPT and Perplexity citations &mdash; completely different system. The roofers winning in AI aren't the ones who won at old SEO. It's whoever builds entity trust first.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="obj" style="background:rgba(37,99,235,0.07); border:1px solid rgba(37,99,235,0.15)">
+          <div style="font-size:22px">&#x23F1;&#xFE0F;</div>
+          <div>
+            <div class="obj q">"How long before I see results?"</div>
+            <div class="obj a">Foundation work (schema, directories, NAP) shows up in AI within 30&ndash;60 days. Full visibility build-out: 3&ndash;4 months. Our moving company client saw revenue double by month 8. Roofing has less online competition &mdash; expect faster traction.</div>
+          </div>
+        </div>
+        <div class="obj" style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.15)">
+          <div style="font-size:22px">&#x1F3D7;&#xFE0F;</div>
+          <div>
+            <div class="obj q">"Why not just run Google Ads?"</div>
+            <div class="obj a">Ads stop when you stop paying. AI citations compound &mdash; the longer you're cited, the harder you are to displace. Plus, a $50 CPC for "roofer San Antonio" on Google Ads costs you $600/mo for 12 clicks. AI visibility costs less and builds equity.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S8: THE ROADMAP -->
+  <div class="slide bg-blue" id="slide-8">
+    <div class="eyebrow">The Roadmap</div>
+    <h2>From Invisible to the Most Cited Roofer in San Antonio</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--cyan); box-shadow:0 0 8px var(--cyan)"></div>
+        <div class="tl-label">Now</div>
+        <div class="tl-value accent" style="font-size:14px">Audit Done</div>
+        <div class="tl-sub">Gap identified.<br>Competitors mapped.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(255,255,255,0.3)"></div>
+        <div class="tl-label">Month 1</div>
+        <div class="tl-value" style="font-size:14px; color:rgba(255,255,255,0.7)">Foundation</div>
+        <div class="tl-sub">NAP fix, schema,<br>entity listings</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(255,255,255,0.3)"></div>
+        <div class="tl-label">Month 2&ndash;3</div>
+        <div class="tl-value" style="font-size:14px; color:rgba(255,255,255,0.7)">Visibility</div>
+        <div class="tl-sub">Citations, content,<br>location pages</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(255,255,255,0.3)"></div>
+        <div class="tl-label">Month 4&ndash;5</div>
+        <div class="tl-value green" style="font-size:14px">AI Citations</div>
+        <div class="tl-sub">Appearing in ChatGPT<br>&amp; Perplexity answers</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--green); box-shadow:0 0 8px var(--green)"></div>
+        <div class="tl-label">Month 6+</div>
+        <div class="tl-value green" style="font-size:14px">Dominance</div>
+        <div class="tl-sub">Top cited roofer<br>in San Antonio AI</div>
+      </div>
+    </div>
+    <div class="cols c3" style="margin-top:28px">
+      <div class="card glow-cyan">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:2px; color:var(--cyan); margin-bottom:10px">Month 1</div>
+        <ul style="padding-left:16px; display:flex; flex-direction:column; gap:5px">
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">NAP consistency across all directories</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Roofer + LocalBusiness schema markup</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">FAQ schema on roof repair, metal, storm damage pages</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">HomeAdvisor + Angi + BBB + Buildzoom</li>
+        </ul>
+      </div>
+      <div class="card glow-green">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:2px; color:var(--green); margin-bottom:10px">Month 2&ndash;3</div>
+        <ul style="padding-left:16px; display:flex; flex-direction:column; gap:5px">
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Location pages: Alamo Heights, Stone Oak, Boerne, New Braunfels</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">AI citation-triggering content (storm FAQs, metal roof guides)</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Review campaign on AI-trusted platforms</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Contractor directory citations across Texas</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div style="font-size:10px; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,0.35); margin-bottom:10px">Ongoing</div>
+        <ul style="padding-left:16px; display:flex; flex-direction:column; gap:5px">
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Monthly entity signal building</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Quarterly AI re-audit</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Reporting tied to your call tracking</li>
+          <li style="font-size:13px; color:rgba(255,255,255,0.75)">Direct line &mdash; Donal &amp; Thonty</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- S9: AI MARKET STATS -->
+  <div class="slide bg-mid" id="slide-9">
+    <div class="eyebrow">The Shift Is Already Happening</div>
+    <h2>AI Search Isn't Coming. <span class="accent">It's Here.</span></h2>
+    <div class="cols c4" style="margin-top:26px">
+      <div class="card glow-cyan" style="text-align:center; padding:26px 16px">
+        <div class="big-n accent" style="font-size:52px">200M+</div>
+        <div class="big-l" style="margin-top:8px">ChatGPT weekly active users</div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px">Fastest-growing consumer app in history</p>
+      </div>
+      <div class="card glow-blue" style="text-align:center; padding:26px 16px">
+        <div class="big-n" style="font-size:52px; color:var(--blue)">400%</div>
+        <div class="big-l" style="margin-top:8px">Perplexity growth year on year</div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px">100M+ monthly queries and climbing</p>
+      </div>
+      <div class="card glow-amber" style="text-align:center; padding:26px 16px">
+        <div class="big-n yellow" style="font-size:52px">1 in 3</div>
+        <div class="big-l" style="margin-top:8px">Consumers ask AI before calling a local business</div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px">Up from near zero in 2022</p>
+      </div>
+      <div class="card glow-green" style="text-align:center; padding:26px 16px">
+        <div class="big-n green" style="font-size:52px">50%</div>
+        <div class="big-l" style="margin-top:8px">Local discovery projected via AI by end of 2026</div>
+        <p style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:8px">Google AI Overviews now on 15% of all searches</p>
+      </div>
+    </div>
+    <div style="margin-top:18px; display:flex; gap:16px">
+      <div class="card" style="flex:1; padding:16px 20px; display:flex; align-items:center; gap:14px">
+        <div style="font-size:26px">&#x1F4C8;</div>
+        <p style="font-size:14px; color:rgba(255,255,255,0.8)"><strong>AI search is growing 35% month-over-month.</strong> Roofers cited now build compounding visibility. Roofers who wait pay 3&times; as much to catch up.</p>
+      </div>
+      <div class="card glow-red" style="flex:1; padding:16px 20px; display:flex; align-items:center; gap:14px">
+        <div style="font-size:26px">&#x26A1;</div>
+        <p style="font-size:14px; color:rgba(255,255,255,0.8)"><strong>Right now: almost zero San Antonio roofers are optimised for AI.</strong> The first contractor to own this space owns it for years. Storm season is coming.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- S10: THE CLOSE -->
+  <div class="slide bg-close" id="slide-10">
+    <div class="cols c12" style="align-items:center; height:100%; margin-top:0">
+      <div>
+        <div class="eyebrow">The Decision</div>
+        <h2 style="font-size:42px">You're Already<br>Halfway There.</h2>
+        <div class="divline"></div>
+        <p style="font-size:16px; color:rgba(255,255,255,0.65); max-width:360px; margin-top:8px">10+ years of experience. 5-year workmanship warranty. Metal roofing expertise. Premium materials. You're not starting from zero &mdash; you're one system away from owning San Antonio in AI.</p>
+        <div class="hook-box" style="margin-top:24px; font-size:18px; position:relative; padding-right:80px">
+          "Do you want to be the roofer San Antonio AI recommends &mdash; or the one it skips?"
+          <button class="cp" onclick="cp(this, 'Do you want to be the roofer San Antonio AI recommends — or the one it skips?')">&#x1F4CB; Copy</button>
+        </div>
+        <div style="margin-top:24px; display:flex; gap:20px">
+          <div class="big-metric">
+            <div class="big-n green" style="font-size:38px">10&ndash;20+</div>
+            <div class="big-l">Extra jobs/mo target</div>
+          </div>
+          <div class="big-metric">
+            <div class="big-n accent" style="font-size:38px">60&ndash;90</div>
+            <div class="big-l">Days to first AI citations</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding:30px; display:flex; flex-direction:column; gap:16px">
+        <h3 style="font-size:20px">What You Get</h3>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px">
+          <li style="font-size:14px; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,0.8)"><span style="color:var(--green)">&#x2713;</span>AI visibility audit (done &mdash; this deck)</li>
+          <li style="font-size:14px; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,0.8)"><span style="color:var(--green)">&#x2713;</span>Entity + schema implementation</li>
+          <li style="font-size:14px; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,0.8)"><span style="color:var(--green)">&#x2713;</span>Monthly citation + content building</li>
+          <li style="font-size:14px; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,0.8)"><span style="color:var(--green)">&#x2713;</span>Quarterly re-audit + job source reporting</li>
+          <li style="font-size:14px; display:flex; gap:10px; align-items:flex-start; color:rgba(255,255,255,0.8)"><span style="color:var(--green)">&#x2713;</span>Direct line to Donal &amp; Thonty &mdash; no managers</li>
+        </ul>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:16px; margin-top:4px">
+          <div style="font-size:22px; font-weight:800; text-align:center">Donal Lynch</div>
+          <div style="font-size:13px; color:rgba(255,255,255,0.35); text-align:center; margin-top:3px">Online Optimisers</div>
+          <div style="margin-top:14px; background:rgba(255,255,255,0.04); border:2px dashed rgba(255,255,255,0.12); border-radius:8px; padding:10px; text-align:center; font-size:12px; color:rgba(255,255,255,0.25); font-style:italic">[ phone / email ]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="go(-1)" disabled>&#8592;</button>
+  <span id="sc">1 / 10</span>
+  <button id="next" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+  const total = 10;
+  let cur = 1;
+  function go(d) {
+    document.getElementById('slide-'+cur).classList.remove('active');
+    cur = Math.min(Math.max(cur+d,1),total);
+    document.getElementById('slide-'+cur).classList.add('active');
+    document.getElementById('sc').textContent = cur+' / '+total;
+    document.getElementById('prev').disabled = cur===1;
+    document.getElementById('next').disabled = cur===total;
+    document.getElementById('pb').style.width = (cur/total*100)+'%';
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(-1);
+  });
+  function cp(btn,text){
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.textContent='\u2713 Copied'; btn.classList.add('done');
+      setTimeout(()=>{btn.textContent='\u{1F4CB} Copy'; btn.classList.remove('done');},2000);
+    });
+  }
+  document.getElementById('pb').style.width=(1/total*100)+'%';
+</script>
+</body>
+</html>
