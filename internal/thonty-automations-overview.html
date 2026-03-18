@@ -306,6 +306,23 @@
     .card-bg-8  { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
     .card-bg-9  { background: linear-gradient(135deg, #0f172a 0%, #1e2d3d 100%); }
     .card-bg-10 { background: linear-gradient(135deg, #06214f 0%, #1555FC 100%); }
+    .card-bg-11 { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); }
+    .card-bg-11 .card-hook { background: rgba(0,0,0,0.25); border-color: rgba(34,197,94,0.3); color: #6ee7b7; }
+    .card.featured { border: 1px solid rgba(34,197,94,0.3); }
+    .card.featured::after {
+      content: 'BUILT';
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #6ee7b7;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 100px;
+      padding: 3px 10px;
+    }
 
     .card-header {
       display: flex;
@@ -529,11 +546,11 @@
   <section class="hero">
     <div class="pill-badge">SALES AUTOMATION COMMAND CENTRE</div>
     <h1>Your AI <span class="grad">Sales Machine</span></h1>
-    <p class="subline">10 automations. Claude + APIs do the work. You close the deals. Everything else runs in the background.</p>
+    <p class="subline">11 automations. Claude + APIs do the work. You close the deals. Everything else runs in the background.</p>
 
     <div class="stats-row">
       <div class="stat">
-        <div class="stat-num c-cyan">10</div>
+        <div class="stat-num c-cyan">11</div>
         <div class="stat-label">Automations</div>
       </div>
       <div class="stat">
@@ -874,6 +891,50 @@
     </div>
   </section>
 
+  <!-- CATEGORY: CLOSING -->
+  <div class="category">
+    <span class="cat-icon">&#x1F3AF;</span>
+    <span class="cat-label">Closing &amp; Conversion</span>
+    <span class="cat-line"></span>
+    <span class="cat-count">1 automation</span>
+  </div>
+
+  <section class="grid-section">
+    <div class="cards-grid" style="grid-template-columns: 1fr 1fr 1fr">
+
+      <!-- 11 -->
+      <a class="card card-bg-11 featured" href="thonty-auto-audit-builder.html" style="grid-column: span 2;">
+        <div class="card-header">
+          <span class="card-emoji">&#x1F4A5;</span>
+          <span class="card-num">11</span>
+        </div>
+        <div class="card-name">Instant AI Audit Builder</div>
+        <div class="tools-flow">
+          <span class="tool-pill">Instantly</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">n8n</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">Firecrawl</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">Claude</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">GitHub Pages</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">Slack</span><span class="arrow">&rarr;</span>
+          <span class="tool-pill">Instantly</span>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-roles">
+          <div class="role-row role-you"><span class="role-label">YOU</span><span class="role-text">Nothing &mdash; it fires automatically when a prospect replies</span></div>
+          <div class="role-row role-claude"><span class="role-label">CLAUDE</span><span class="role-text">Scrapes their website, generates a full personalised 10-slide AI audit presentation with competitor data, hosts it live, and sends the link &mdash; all within 5 minutes</span></div>
+        </div>
+        <div class="card-stats">
+          <div class="card-stat"><span class="cs-val green">5 min</span>reply to deck</div>
+          <div class="card-stat"><span class="cs-val">10 slides</span>personalised</div>
+          <div class="card-stat"><span class="cs-val amber">$0.15</span>/audit</div>
+          <div class="card-stat"><span class="cs-val green">Auto</span>hosted link</div>
+        </div>
+        <div class="card-hook">Prospect replies. 5 minutes later they get a full personalised AI audit deck with their competitors, gaps, and a roadmap. The quality IS the pitch.</div>
+      </a>
+
+    </div>
+  </section>
+
   <!-- TOTAL COST -->
   <div class="cost-strip">
     <div class="cost-bar">
@@ -914,6 +975,7 @@
       <a href="thonty-auto-pre-call-brief.html" class="cta-btn">&#x1F4CB; Pre-Call Brief</a>
       <a href="thonty-auto-reactivation.html" class="cta-btn">&#x1F504; Reactivation</a>
       <a href="thonty-auto-linkedin-nurture.html" class="cta-btn">&#x1F916; LinkedIn Nurture</a>
+      <a href="thonty-auto-audit-builder.html" class="cta-btn" style="border-color:rgba(34,197,94,0.5); background:rgba(34,197,94,0.1)">&#x1F4A5; Audit Builder</a>
     </div>
   </section>
 

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instant AI Audit Builder — Online Optimisers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #005DE0; --navy: #072F60; --accent: #1555FC; --bg: #060f1e;
+      --surface: #0d1b2e; --surface2: #111f35; --border: #1a2d4a;
+      --text: #e8edf4; --muted: #7a90aa; --green: #22c55e; --amber: #f59e0b; --red: #ef4444; --cyan: #06B6D4;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+    body > * { position: relative; z-index: 1; }
+
+    nav { position: sticky; top: 0; z-index: 100; height: 52px; background: rgba(6, 15, 30, 0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; }
+    nav a.nav-back { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; transition: color 0.2s; white-space: nowrap; }
+    nav a.nav-back:hover { color: var(--text); }
+    nav .nav-centre { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; display: flex; align-items: center; gap: 8px; }
+    .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.6); } 50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(34,197,94,0); } }
+    nav .nav-right { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+    .hero { width: 100%; padding: 100px 32px 90px; text-align: center; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.15) 0%, transparent 70%), linear-gradient(180deg, #060f1e 0%, #060f1e 100%); border-bottom: 1px solid var(--border); }
+    .hero .pill { display: inline-block; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.4); color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 6px 16px; border-radius: 100px; margin-bottom: 36px; }
+    .hero h1 { font-size: 44px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .hero h2 { font-size: 44px; font-weight: 800; background: linear-gradient(90deg, #22c55e, #06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 24px; }
+    .hero .subline { font-size: 18px; font-weight: 400; color: var(--muted); max-width: 620px; margin: 0 auto 40px; }
+    .hero-stats { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+    .hero-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .hero-stat .num { font-size: 36px; font-weight: 800; color: var(--green); line-height: 1; }
+    .hero-stat .label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.12); border: 2px solid var(--green); color: var(--green); font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 10px 24px; border-radius: 100px; margin-bottom: 24px; animation: badge-glow 3s ease-in-out infinite; }
+    .status-badge .badge-dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes badge-glow { 0%, 100% { box-shadow: 0 0 12px rgba(34,197,94,0.2); } 50% { box-shadow: 0 0 28px rgba(34,197,94,0.45); } }
+
+    .wrap { max-width: 900px; margin: 0 auto; padding: 0 32px; }
+    section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--border); }
+    .section-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 16px; }
+    .section-title { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -0.02em; margin-bottom: 32px; line-height: 1.2; }
+
+    .data-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px; }
+    .data-card p { font-size: 17px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .data-card .bold-line { font-size: 18px; font-weight: 700; color: var(--text); }
+
+    .metric-strip { display: flex; gap: 16px; margin-top: 40px; }
+    .metric-card { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; text-align: center; transition: border-color 0.25s, transform 0.2s; }
+    .metric-card:hover { border-color: var(--green); transform: translateY(-2px); }
+    .metric-num { font-size: 36px; font-weight: 800; color: var(--green); line-height: 1; margin-bottom: 6px; }
+    .metric-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 8px; flex-wrap: wrap; }
+    .pipeline-step { flex: 1; min-width: 100px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 14px; text-align: center; position: relative; transition: border-color 0.25s, box-shadow 0.25s; }
+    .pipeline-step:hover { border-color: var(--green); box-shadow: 0 0 20px rgba(34,197,94,0.15); }
+    .pipeline-step.slack-step { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.04); }
+    .pipeline-step.slack-step:hover { border-color: var(--green); }
+    .pipeline-arrow { display: flex; align-items: center; padding: 0 4px; color: rgba(34,197,94,0.4); font-size: 18px; flex-shrink: 0; animation: flow-pulse 2s ease-in-out infinite; }
+    @keyframes flow-pulse { 0%, 100% { color: rgba(34,197,94,0.25); } 50% { color: rgba(34,197,94,0.7); } }
+    .pipeline-step .step-icon { font-size: 24px; margin-bottom: 8px; }
+    .pipeline-step .step-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pipeline-step .step-sub { font-size: 10px; font-weight: 500; color: var(--muted); line-height: 1.4; }
+    .pipeline-step.slack-step .step-name { color: var(--green); }
+
+    .slack-box { background: #1a1d21; border: 2px solid rgba(34,197,94,0.3); border-left: 4px solid var(--green); border-radius: 12px; padding: 28px 32px; font-family: 'Manrope', monospace; font-size: 13px; line-height: 1.7; color: #d1d5db; overflow-x: auto; position: relative; animation: slack-glow 3s ease-in-out infinite; }
+    @keyframes slack-glow { 0%, 100% { border-color: rgba(34,197,94,0.3); border-left-color: rgba(34,197,94,0.5); box-shadow: 0 0 20px rgba(34,197,94,0.05); } 50% { border-color: rgba(34,197,94,0.5); border-left-color: rgba(34,197,94,1); box-shadow: 0 0 30px rgba(34,197,94,0.12); } }
+    .slack-copy-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .slack-copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .slack-box .slack-header { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .slack-box .slack-meta { font-size: 12px; color: #6b7280; margin-bottom: 20px; border-bottom: 1px solid #2d3139; padding-bottom: 14px; }
+    .slack-box .s-section { color: var(--green); font-weight: 700; margin-top: 14px; margin-bottom: 4px; display: block; }
+    .slack-box .s-green { color: var(--green); }
+    .slack-box .s-amber { color: var(--amber); }
+    .slack-box .s-red { color: var(--red); }
+    .slack-box .s-muted { color: #6b7280; }
+    .slack-box .s-link { color: var(--green); text-decoration: underline; cursor: pointer; }
+    .slack-box .indent { padding-left: 16px; border-left: 2px solid #2d3139; margin: 6px 0 10px; }
+    .slack-caption { text-align: center; font-size: 14px; color: var(--muted); margin-top: 24px; font-weight: 500; }
+
+    .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .ba-panel { border-radius: 14px; padding: 32px; }
+    .ba-panel.before { background: var(--surface); border: 1px solid var(--border); }
+    .ba-panel.after { background: rgba(34, 197, 94, 0.06); border: 1px solid rgba(34, 197, 94, 0.3); }
+    .ba-panel .ba-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; }
+    .ba-panel.before .ba-label { color: var(--red); }
+    .ba-panel.after .ba-label { color: var(--green); }
+    .ba-panel .ba-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+    .ba-panel .ba-body { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+    .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 18px; }
+    .tool-card .tool-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .tool-card .tool-desc { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+    .tool-card .tool-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--green); background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 100px; padding: 3px 10px; margin-bottom: 4px; margin-right: 4px; }
+    .tool-card .tool-price { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .cost-line { text-align: center; font-size: 16px; font-weight: 700; color: var(--green); }
+
+    .build-steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+    .build-step { display: flex; align-items: flex-start; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; }
+    .build-step .step-num { font-size: 28px; font-weight: 800; color: var(--green); line-height: 1; min-width: 36px; }
+    .build-step .step-content .step-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .build-step .step-content .step-body { font-size: 14px; color: var(--muted); }
+    .cta-callout { background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(6, 182, 212, 0.9)); border-radius: 14px; padding: 32px 40px; text-align: center; animation: cta-glow 4s ease-in-out infinite; }
+    @keyframes cta-glow { 0%, 100% { box-shadow: 0 0 30px rgba(34,197,94,0.2); } 50% { box-shadow: 0 0 50px rgba(34,197,94,0.35); } }
+    .cta-callout p { font-size: 17px; font-weight: 600; color: #fff; line-height: 1.6; }
+
+    .page-nav { max-width: 900px; margin: 0 auto; padding: 40px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .pn-link { text-decoration: none; display: flex; flex-direction: column; gap: 2px; padding: 14px 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); transition: all 0.2s; }
+    .pn-link:hover { border-color: var(--green); transform: translateY(-2px); }
+    .pn-dir { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.5px; }
+    .pn-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .pn-home { font-size: 12px; font-weight: 700; color: var(--muted); flex-direction: row; padding: 10px 16px; }
+    .pn-home:hover { color: #fff; }
+
+    footer { border-top: 1px solid var(--border); padding: 32px; text-align: center; font-size: 13px; color: var(--muted); font-weight: 500; }
+
+    @media (max-width: 768px) {
+      .hero h1, .hero h2 { font-size: 32px; }
+      .hero-stats { gap: 32px; }
+      .pipeline { flex-direction: column; gap: 8px; }
+      .pipeline-arrow { transform: rotate(90deg); }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .before-after { grid-template-columns: 1fr; }
+      nav { padding: 0 16px; }
+      nav .nav-centre { font-size: 12px; }
+      .wrap { padding: 0 20px; }
+      .slack-box { padding: 20px; }
+      .metric-strip, .page-nav { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="thonty-automations-overview.html" class="nav-back">&larr; Back to Overview</a>
+    <span class="nav-centre"><span class="live-dot"></span> &#128165; Instant AI Audit Builder</span>
+    <span class="nav-right">Online Optimisers</span>
+  </nav>
+
+  <div class="hero">
+    <div class="status-badge"><span class="badge-dot"></span> STATUS: BUILT</div>
+    <div class="pill">REPLY-TRIGGERED CONVERSION</div>
+    <h1>Prospect Replies.</h1>
+    <h2>5 Minutes Later, They Have a Full AI Audit.</h2>
+    <p class="subline">No manual research. No templates. No delay. Claude scrapes their website, analyses their AI visibility, generates a personalised 10-slide presentation, hosts it live, and sends the link. The quality of the output is the pitch.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num">5 min</span><span class="label">Reply to Deck</span></div>
+      <div class="hero-stat"><span class="num">10 slides</span><span class="label">Personalised</span></div>
+      <div class="hero-stat"><span class="num">$0.15</span><span class="label">Cost per Audit</span></div>
+      <div class="hero-stat"><span class="num">0</span><span class="label">Manual Effort</span></div>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <section><div class="wrap">
+    <div class="section-label">How It Works</div>
+    <div class="section-title">The Pipeline</div>
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-icon">&#128232;</div>
+        <div class="step-name">Instantly Webhook</div>
+        <div class="step-sub">Reply detected<br>from prospect</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:0s">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="step-icon">&#129504;</div>
+        <div class="step-name">Claude (Haiku)</div>
+        <div class="step-sub">Classifies reply sentiment:<br>hot / warm / neutral / negative</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:0.3s">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="step-icon">&#128269;</div>
+        <div class="step-name">Firecrawl</div>
+        <div class="step-sub">Scrapes prospect website:<br>services, location, team, reviews</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:0.6s">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="step-icon">&#129302;</div>
+        <div class="step-name">Claude (Sonnet)</div>
+        <div class="step-sub">Generates all 10 slides:<br>audit, competitors, pain points,<br>case studies, roadmap, CTA</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:0.9s">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="step-icon">&#128196;</div>
+        <div class="step-name">Claude (Sonnet)</div>
+        <div class="step-sub">Builds complete branded<br>HTML presentation</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:1.2s">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="step-icon">&#127760;</div>
+        <div class="step-name">GitHub Pages</div>
+        <div class="step-sub">Pushes HTML via API,<br>live URL in seconds</div>
+      </div>
+      <div class="pipeline-arrow" style="animation-delay:1.5s">&rarr;</div>
+      <div class="pipeline-step slack-step">
+        <div class="step-icon">&#128236;</div>
+        <div class="step-name">Slack + Instantly</div>
+        <div class="step-sub">Sends presentation link<br>to prospect, notifies Thonty</div>
+      </div>
+    </div>
+    <div class="metric-strip">
+      <div class="metric-card"><div class="metric-num">5 min</div><div class="metric-label">Reply to Live Deck</div></div>
+      <div class="metric-card"><div class="metric-num">$0.15</div><div class="metric-label">Cost per Audit</div></div>
+      <div class="metric-card"><div class="metric-num">10 slides</div><div class="metric-label">Fully Personalised</div></div>
+    </div>
+  </div></section>
+
+  <!-- Slack Mockup -->
+  <section><div class="wrap">
+    <div class="section-label">The Output</div>
+    <div class="section-title">What Thonty Gets in Slack</div>
+    <div class="slack-box" id="slackBox1">
+      <button class="slack-copy-btn" onclick="copySlack('slackBox1')">Copy Brief</button>
+      <div class="slack-header">&#128165; AI Audit sent automatically!</div>
+      <div class="slack-meta">Instant Audit Builder &nbsp;|&nbsp; Reply-triggered &nbsp;|&nbsp; 4 min 32 sec</div>
+
+      <span class="s-section">&#128100; LEAD</span>
+      <div class="indent">
+        Lead: <strong>Nick Garner</strong>, Red Roan Construction (San Antonio, TX)<br>
+        Source: Email reply to Campaign <em>'Roofers TX Q1'</em><br>
+        His reply: <em>"Yeah I'd be interested to learn more about what you guys do"</em><br>
+        Sentiment: <span class="s-green">&#128994; Positive</span>
+      </div>
+
+      <span class="s-section">&#128196; PRESENTATION GENERATED AND SENT</span>
+      <div class="indent">
+        &rarr; <span class="s-link">https://audits.onlineoptimisers.net/red-roan-construction.html</span>
+      </div>
+
+      <span class="s-section">&#127919; 10 SLIDES PERSONALISED TO RED ROAN CONSTRUCTION</span>
+      <div class="indent">
+        &bull; AI visibility: <span class="s-red">0/6 queries</span> &mdash; not cited in ChatGPT, Perplexity, or Google AI<br>
+        &bull; Competitors cited instead: Rhino Roofers, Seidel Roofing, Legacy Roofing SA<br>
+        &bull; Domain rating: <span class="s-amber">~5/100</span> <span class="s-muted">(competitor avg: ~22)</span><br>
+        &bull; Revenue gap: <span class="s-red">$120k&ndash;$480k/year</span> in lost jobs<br>
+        &bull; Case study match: Lankford Roofing <span class="s-muted">(same niche, same state)</span>
+      </div>
+
+      <span class="s-section">&#128232; DELIVERY</span>
+      <div class="indent">
+        Email sent with link + Calendly.<br>
+        Time from reply to delivery: <span class="s-green"><strong>4 min 32 sec</strong></span>
+      </div>
+    </div>
+    <p class="slack-caption">This is a real example. The Red Roan Construction audit was generated as a proof of concept.</p>
+  </div></section>
+
+  <!-- Before / After -->
+  <section><div class="wrap">
+    <div class="section-label">The Difference</div>
+    <div class="section-title">Before vs After</div>
+    <div class="before-after">
+      <div class="ba-panel before">
+        <div class="ba-label">Before &mdash; The Old Way</div>
+        <div class="ba-title">The Old Way</div>
+        <div class="ba-body">Prospect replies "tell me more." You see it 3 hours later. Spend 45 minutes researching them. Google their website. Check their reviews. Look up competitors. Copy-paste into a deck template. Tweak the slides. Send it the next day. They've already talked to 2 other agencies.</div>
+      </div>
+      <div class="ba-panel after">
+        <div class="ba-label">After &mdash; The Audit Builder Way</div>
+        <div class="ba-title">The Audit Builder Way</div>
+        <div class="ba-body">Prospect replies. 5 minutes later &mdash; while you're on another call or sleeping &mdash; they receive a full 10-slide branded presentation with their real competitors, their AI visibility gaps, a revenue impact estimate, case studies from your actual clients, and a booking link. They've never seen anything like it. The AI built it, and that's the point.</div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- Tools -->
+  <section><div class="wrap">
+    <div class="section-label">The Stack</div>
+    <div class="section-title">Tools</div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-name">Instantly</div>
+        <div class="tool-desc">Email reply webhook trigger</div>
+        <span class="tool-tag">&#10003; API</span>
+        <span class="tool-tag">&#10003; Webhook</span>
+        <div class="tool-price">$30/mo</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Firecrawl</div>
+        <div class="tool-desc">Website scraping to clean markdown</div>
+        <span class="tool-tag">&#10003; API</span>
+        <div class="tool-price">$0/mo (free tier)</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Claude API</div>
+        <div class="tool-desc">Content generation + HTML rendering</div>
+        <span class="tool-tag">&#10003; API</span>
+        <span class="tool-tag">&#10003; MCP</span>
+        <div class="tool-price">~$0.15/audit</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">GitHub Pages</div>
+        <div class="tool-desc">Static hosting with custom domain</div>
+        <span class="tool-tag">&#10003; API</span>
+        <div class="tool-price">Free</div>
+      </div>
+    </div>
+    <p class="cost-line">Total cost per audit generated: ~$0.15</p>
+  </div></section>
+
+  <!-- Build Steps -->
+  <section><div class="wrap">
+    <div class="section-label">Implementation</div>
+    <div class="section-title">Build This</div>
+    <div class="build-steps">
+      <div class="build-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Create GitHub repo with Pages + custom domain</div>
+          <div class="step-body">Set up the <code>prospect-audits</code> repo with GitHub Pages enabled and the custom domain <code>audits.onlineoptimisers.net</code> configured.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Build Claude prompt for slide content generation</div>
+          <div class="step-body">Create the prompt that takes lead data + website scrape and outputs structured JSON for all 10 slides: AI visibility audit, competitor analysis, pain points, case studies, roadmap, and CTA.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Build Claude prompt for full HTML generation</div>
+          <div class="step-body">Second prompt that takes the content JSON and renders a complete branded HTML presentation &mdash; ready to be hosted as a standalone page.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Build n8n sub-workflow: scrape &rarr; content &rarr; HTML &rarr; push</div>
+          <div class="step-body">Chain Firecrawl website scrape, Claude content generation, Claude HTML rendering, and GitHub API push into a single n8n sub-workflow.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Build n8n email workflow: webhook &rarr; sentiment &rarr; pipeline &rarr; send</div>
+          <div class="step-body">Instantly webhook triggers the flow. Claude Haiku classifies sentiment. Positive/warm replies enter the audit pipeline. The presentation link is sent back via Instantly.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">Connect Slack notifications for Thonty</div>
+          <div class="step-body">Post the full audit summary to Slack so Thonty sees every generated audit in real time &mdash; lead details, sentiment, presentation link, and key findings.</div>
+        </div>
+      </div>
+      <div class="build-step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-title">Test with 5 real prospect websites</div>
+          <div class="step-body">Run 5 real prospects through the full pipeline end-to-end. Verify scraping quality, slide accuracy, HTML rendering, GitHub hosting, email delivery, and Slack alerts. Iterate on quality.</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-callout">
+      <p>This automation is already built. The prompts, templates, and SOP are ready. The Red Roan Construction audit was generated in this session as a proof of concept.</p>
+    </div>
+  </div></section>
+
+  <!-- Page Nav -->
+  <div class="page-nav">
+    <a href="thonty-auto-linkedin-nurture.html" class="pn-link pn-prev">
+      <span class="pn-dir">&larr; Previous</span>
+      <span class="pn-name">LinkedIn Nurture Sequencer</span>
+    </a>
+    <a href="thonty-automations-overview.html" class="pn-link pn-home">All Automations</a>
+    <a href="thonty-auto-video-outreach.html" class="pn-link pn-next">
+      <span class="pn-dir">Next &rarr;</span>
+      <span class="pn-name">AI Video Outreach</span>
+    </a>
+  </div>
+
+  <footer>Online Optimisers &nbsp;&middot;&nbsp; Instant AI Audit Builder &nbsp;&middot;&nbsp; 2026</footer>
+
+  <script>
+  function copySlack(id) {
+    var box = document.getElementById(id);
+    var text = box.innerText.replace('Copy Brief', '').trim();
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = box.querySelector('.slack-copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy Brief'; }, 2000);
+    });
+  }
+  </script>
+</body>
+</html>
