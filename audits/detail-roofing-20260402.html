@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detail Roofing AI Visibility Audit | Online Optimisers</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg:#060f1e; --bg2:#0d1b2e; --card:#111f35; --card-border:#1a2d4a;
+    --primary:#01a2f9; --dark-blue:#0052cc; --mid-blue:#1870d4; --light-blue:#8cc7f3;
+    --text:#e8edf4; --text-dim:#7a90aa; --text-bright:#ffffff;
+    --red:#ef4444; --yellow:#f59e0b; --green:#22c55e;
+    --chatgpt:#7CB89E; --perplexity:#8B7EC2; --google:#4285F4;
+  }
+
+  body {
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text);
+    overflow:hidden; height:100vh;
+  }
+
+  .deck { width:100vw; height:100vh; position:relative; z-index:1; }
+  .slide {
+    display:none; width:100%; height:100%;
+    padding:48px 64px 56px;
+    position:absolute; top:0; left:0;
+    flex-direction:column; justify-content:center;
+    overflow-y:auto;
+  }
+  .slide.active { display:flex; }
+
+  .bg-cover { background:radial-gradient(ellipse at 70% 30%,rgba(1,162,249,.12) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(0,82,204,.08) 0%,transparent 50%),var(--bg); }
+  .bg-dark { background:var(--bg); }
+  .bg-mid { background:var(--bg2); }
+  .bg-warm { background:linear-gradient(135deg,#060f1e 0%,#0d1b2e 100%); }
+  .bg-proof { background:linear-gradient(135deg,#060f1e 0%,#0d1a2e 100%); }
+  .bg-close { background:radial-gradient(ellipse at 50% 0%,rgba(1,162,249,.15) 0%,transparent 60%),var(--bg); }
+  .bg-engine { background:linear-gradient(180deg,#040c18 0%,#060f1e 50%,#0d1a2e 100%); }
+
+  .logo { position:fixed;top:20px;left:28px;font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(1,162,249,.7);z-index:100; }
+  .hint { position:fixed;top:18px;right:22px;font-size:10px;color:rgba(255,255,255,.15);z-index:100; }
+  .slide-cta { position:fixed;top:14px;right:120px;z-index:100;display:none; }
+  .slide-cta a { display:inline-block;padding:12px 28px;background:var(--primary);color:#ffffff;font-weight:800;font-size:14px;border-radius:10px;text-decoration:none;letter-spacing:.5px;transition:all .2s;box-shadow:0 0 20px rgba(1,162,249,.3); }
+  .slide-cta a:hover { opacity:.9; }
+  .progress-bar { position:fixed;top:0;left:0;height:3px;background:var(--primary);transition:width .35s ease;z-index:200; }
+
+  .nav {
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:16px;
+    background:rgba(1,162,249,.12);border:1px solid rgba(1,162,249,.3);
+    border-radius:40px;padding:10px 28px;z-index:100;
+    backdrop-filter:blur(10px);
+  }
+  .nav button { background:none;border:none;color:#ffffff;font-size:20px;cursor:pointer;opacity:.7;transition:all .2s;padding:4px 12px; }
+  .nav button:hover { opacity:1; }
+  .nav button:disabled { opacity:.2;cursor:default; }
+  #sc { font-size:13px;font-weight:700;color:#ffffff;min-width:56px;text-align:center;letter-spacing:1px; }
+
+  .eyebrow { font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700; }
+  h1 { font-family:'Manrope',sans-serif;font-size:clamp(32px,4.2vw,48px);font-weight:800;line-height:1.08;letter-spacing:-.5px;color:#ffffff; }
+  h2 { font-family:'Manrope',sans-serif;font-size:clamp(24px,3.2vw,36px);font-weight:800;line-height:1.1;letter-spacing:-.3px;color:#ffffff; }
+  h3 { font-size:17px;font-weight:700;color:var(--text-bright); }
+  p { font-size:14px;line-height:1.65;color:rgba(255,255,255,.7); }
+  strong { color:#fff; }
+
+  .accent { color:var(--primary); }
+  .divline { width:50px;height:3px;background:var(--primary);border-radius:2px;margin:12px 0; }
+
+  .cols { display:grid;gap:16px;margin-top:20px; }
+  .c2 { grid-template-columns:1fr 1fr; }
+  .c3 { grid-template-columns:1fr 1fr 1fr; }
+  .c4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+  .c21 { grid-template-columns:2fr 1fr; }
+
+  .card {
+    background:var(--card);
+    border:1px solid var(--card-border);border-radius:14px;padding:20px;
+    position:relative;overflow:hidden;transition:border-color .3s ease;
+  }
+  .card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary);opacity:1; }
+  .card:hover { border-color:var(--primary); }
+
+  .card.glow-cyan { border-color:rgba(1,162,249,.3);background:rgba(1,162,249,.04); }
+  .card.glow-green { border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04); }
+  .card.glow-red { border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04); }
+  .card.glow-amber { border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.04); }
+  .card.accent-red::before { background:var(--red); }
+  .card.accent-amber::before { background:var(--yellow); }
+  .card.accent-green::before { background:var(--green); }
+  .card.accent-cyan::before { background:var(--primary); }
+
+  .big-metric { text-align:center; }
+  .big-n { font-size:56px;font-weight:900;line-height:1;letter-spacing:-2px; }
+  .big-l { font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.4);margin-top:6px; }
+
+  .ai-chat {
+    background:var(--card);
+    border:1px solid var(--card-border);border-radius:14px;
+    padding:16px 18px;font-family:'Manrope',monospace;
+    transition:border-color .3s;position:relative;
+  }
+  .ai-chat::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary); }
+  .ai-chat:hover { border-color:var(--primary); }
+  .ai-chat .query { font-size:12px;color:rgba(255,255,255,.45);margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(1,162,249,.1); }
+  .ai-chat .query span { color:rgba(255,255,255,.8);font-style:italic; }
+  .ai-chat .platform-badge { display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px; }
+  .chatgpt-badge { background:rgba(124,184,158,.12);color:var(--chatgpt);border:1px solid rgba(124,184,158,.3); }
+  .perplexity-badge { background:rgba(139,126,194,.12);color:var(--perplexity);border:1px solid rgba(139,126,194,.3); }
+  .google-badge { background:rgba(66,133,244,.12);color:var(--google);border:1px solid rgba(66,133,244,.3); }
+  .ai-chat .answer { font-size:12px;line-height:1.65;color:rgba(255,255,255,.7); }
+  .ai-chat .cited { color:var(--primary);font-weight:600; }
+  .ai-chat .not-cited { color:var(--red);font-weight:600; }
+  .ai-chat .result-tag { display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;margin-top:8px; }
+  .tag-found { background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25); }
+  .tag-missing { background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2); }
+
+  .cp { position:absolute;top:8px;right:8px;background:rgba(1,162,249,.08);border:1px solid rgba(1,162,249,.2);color:rgba(1,162,249,.6);border-radius:5px;padding:3px 9px;font-size:10px;cursor:pointer;transition:all .15s;z-index:10; }
+  .cp:hover { background:rgba(1,162,249,.15);color:var(--primary); }
+  .cp.done { background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:var(--green); }
+
+  .badge { display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px; }
+  .b-red { background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2); }
+  .b-green { background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2); }
+  .b-amber { background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2); }
+  .b-gold { background:rgba(1,162,249,.12);color:var(--primary);border:1px solid rgba(1,162,249,.25); }
+
+  .hook-box { border-left:3px solid var(--primary);padding:12px 18px;margin:16px 0;font-size:17px;font-weight:700;line-height:1.45;color:rgba(255,255,255,.95);position:relative;background:rgba(1,162,249,.03);border-radius:0 8px 8px 0; }
+
+  .pain-list { list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:12px; }
+  .pain-list li { display:flex;align-items:flex-start;gap:12px;font-size:14px;color:rgba(255,255,255,.8); }
+  .pain-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0; }
+
+  .schema-row { display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid rgba(1,162,249,.06); }
+  .schema-row:last-child { border-bottom:none; }
+
+  .comp-card { background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:border-color .3s; }
+  .comp-card:hover { border-color:var(--primary); }
+  .comp-card.is-you { border-color:rgba(239,68,68,.3);opacity:.75; }
+  .comp-card.is-you::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red); }
+  .comp-card.is-leader::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green); }
+  .comp-label { font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px; }
+  .comp-name { font-size:15px;font-weight:800;color:var(--text-bright);margin-bottom:2px; }
+  .comp-domain { font-size:11px;color:var(--primary);margin-bottom:12px; }
+  .comp-stats { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+  .comp-stat-n { font-size:20px;font-weight:900;letter-spacing:-1px; }
+  .comp-stat-l { font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim); }
+
+  .obj { background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;transition:border-color .3s; }
+  .obj:hover { border-color:var(--primary); }
+  .obj .q { font-size:16px;font-weight:800;color:rgba(255,255,255,.95);margin-bottom:4px; }
+  .obj .a { font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.5; }
+  .obj-icon { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0; }
+
+  .cs-card { background:var(--card);border:1px solid rgba(1,162,249,.2);border-radius:16px;padding:24px;color:var(--text); }
+  .cs-name { font-size:18px;font-weight:800;color:var(--text-bright); }
+  .cs-biz { font-size:12px;font-weight:600;margin-top:2px; }
+  .cs-divider { border:none;border-top:1px solid rgba(1,162,249,.1);margin:14px 0; }
+  .cs-stats { display:flex;gap:24px; }
+  .cs-stat .n { font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px; }
+  .cs-stat .l { font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-dim);margin-top:3px; }
+
+  .bar-row { display:flex;align-items:center;gap:12px;margin-bottom:8px; }
+  .bar-label { width:130px;font-size:11px;color:rgba(255,255,255,.6);text-align:right; }
+  .bar-track { flex:1;height:22px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden; }
+  .bar-fill { height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;min-width:fit-content; }
+
+  .cta-strengths { list-style:none;display:flex;flex-direction:column;gap:6px; }
+  .cta-strengths li { font-size:13px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px; }
+  .cta-strengths li::before { content:''; display:inline-block;width:6px;height:6px;background:var(--primary);border-radius:50%;flex-shrink:0; }
+
+  .cta-btn { display:inline-block;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:700;background:var(--primary);color:#060f1e;text-decoration:none;margin-top:16px;transition:all .3s;border:none;cursor:pointer; }
+  .cta-btn:hover { opacity:.9; }
+
+  .kw-table { width:100%;border-collapse:collapse;font-size:12px;margin-top:12px; }
+  .kw-table th { text-align:left;padding:6px 8px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid rgba(1,162,249,.1); }
+  .kw-table td { padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.03); }
+  .kw-table tr:hover { background:rgba(1,162,249,.03); }
+
+  @media (max-width:900px) {
+    .slide { padding:36px 24px 68px; }
+    .c2,.c3,.c4 { grid-template-columns:1fr; }
+    h1 { font-size:28px; }
+    h2 { font-size:22px; }
+    .big-n { font-size:40px; }
+    .cs-stats { flex-wrap:wrap; }
+    .comp-stats { grid-template-columns:1fr; }
+  }
+  @media (max-width:600px) {
+    .slide { padding:24px 16px 68px; }
+    h1 { font-size:22px; }
+    h2 { font-size:18px; }
+    .big-n { font-size:32px; }
+    .nav { padding:6px 16px;gap:10px; }
+    .cols { gap:10px; }
+    .card { padding:14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-cta" id="slideCta"><a href="https://calendly.com/info-yg4/strategy-call" target="_blank">Book a Call</a></div>
+<div class="logo">Online Optimisers</div>
+<div class="hint">&larr; &rarr; arrow keys</div>
+<div class="progress-bar" id="pb"></div>
+
+<div class="deck">
+
+  <!-- ===== SLIDE 1: COVER ===== -->
+  <div class="slide bg-cover active" id="slide-1" style="justify-content:center;align-items:center;text-align:center">
+    <div style="max-width:700px">
+      <div style="margin-bottom:32px">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div style="font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:18px">AI Visibility Audit</div>
+      <h1 style="font-size:clamp(38px,5vw,56px);line-height:1.1;margin-bottom:20px">Detail Roofing &amp; Sheet Metal</h1>
+      <div style="width:60px;height:2px;background:var(--primary);margin:0 auto 24px"></div>
+      <p style="font-size:17px;color:var(--text-dim);max-width:520px;margin:0 auto;line-height:1.6">How visible is your business when property managers ask AI for commercial roofing recommendations in the GTA?</p>
+      <div style="margin-top:40px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+        <div style="font-size:12px;color:var(--text-dim)">
+          <span style="color:var(--primary);font-weight:700">Prepared by</span> Online Optimisers
+        </div>
+        <div style="font-size:12px;color:var(--text-dim)">&bull;</div>
+        <div style="font-size:12px;color:var(--text-dim)">April 2026</div>
+        <div style="font-size:12px;color:var(--text-dim)">&bull;</div>
+        <div style="font-size:12px;color:var(--text-dim)">Mississauga, ON</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 2: KEY FINDINGS ===== -->
+  <div class="slide bg-mid" id="slide-2">
+    <div class="eyebrow">Audit Overview</div>
+    <h2>Key Findings at a Glance</h2>
+    <div class="divline"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px;flex:1">
+      <div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card" style="text-align:center;padding:24px">
+            <div style="font-size:48px;font-weight:900;color:var(--red)">26<span style="font-size:22px;color:var(--text-dim)">/100</span></div>
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px">AI Visibility Score</div>
+          </div>
+          <div class="card" style="text-align:center;padding:24px">
+            <div style="font-size:48px;font-weight:900;color:var(--red)">2<span style="font-size:22px;color:var(--text-dim)">/8</span></div>
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px">Search Queries Cited</div>
+          </div>
+          <div class="card" style="text-align:center;padding:24px">
+            <div style="font-size:48px;font-weight:900;color:var(--yellow)">12+</div>
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px">Competitors Cited</div>
+          </div>
+          <div class="card" style="text-align:center;padding:24px">
+            <div style="font-size:42px;font-weight:900;color:var(--red)">$120K+</div>
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px">Est. Lost Rev / Year</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px;padding:14px 18px;border-left:3px solid var(--red)">
+          <div style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.5"><strong style="color:var(--red)">Critical finding:</strong> Your /about page - containing 40 years of history, Olympic Village projects, and ACMO 2000 certification - has a <code style="color:var(--red);background:rgba(239,68,68,.1);padding:2px 6px;border-radius:4px;font-size:12px">noindex</code> tag. Google and AI systems cannot see your strongest trust signals.</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:24px;display:flex;flex-direction:column;justify-content:center">
+        <h3 style="font-size:16px;margin-bottom:18px;color:var(--text-bright)">What This Audit Covers</h3>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)">
+            <span style="width:24px;height:24px;border-radius:6px;background:rgba(1,162,249,.1);border:1px solid rgba(1,162,249,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--primary);flex-shrink:0">1</span>
+            <span><strong style="color:#fff">Market Landscape</strong> - why AI search changes commercial roofing</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)">
+            <span style="width:24px;height:24px;border-radius:6px;background:rgba(124,184,158,.1);border:1px solid rgba(124,184,158,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--chatgpt);flex-shrink:0">2</span>
+            <span><strong style="color:#fff">AI Search Results</strong> - who gets recommended instead of you</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)">
+            <span style="width:24px;height:24px;border-radius:6px;background:rgba(139,126,194,.1);border:1px solid rgba(139,126,194,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--perplexity);flex-shrink:0">3</span>
+            <span><strong style="color:#fff">Competitor Analysis</strong> - who is winning and why</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)">
+            <span style="width:24px;height:24px;border-radius:6px;background:rgba(1,162,249,.1);border:1px solid rgba(1,162,249,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--primary);flex-shrink:0">4</span>
+            <span><strong style="color:#fff">Technical Gaps</strong> - schema, entity presence, trust signals</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)">
+            <span style="width:24px;height:24px;border-radius:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--green);flex-shrink:0">5</span>
+            <span><strong style="color:#fff">Roadmap</strong> - the path to AI visibility</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 3: MARKET LANDSCAPE ===== -->
+  <div class="slide bg-dark" id="slide-3">
+    <div class="eyebrow">The Shift</div>
+    <h2>Property Managers Are Asking AI for Roofer Recommendations</h2>
+    <div class="divline"></div>
+
+    <div class="cols c2" style="margin-top:18px">
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin-bottom:12px">How People Used to Find Roofers</h3>
+          <ul class="pain-list" style="margin-top:0">
+            <li><div class="pain-icon" style="background:rgba(255,255,255,.05)">&#128270;</div><div>Google search + scroll through 10 results</div></li>
+            <li><div class="pain-icon" style="background:rgba(255,255,255,.05)">&#128172;</div><div>Word-of-mouth referrals from other PMs</div></li>
+            <li><div class="pain-icon" style="background:rgba(255,255,255,.05)">&#11088;</div><div>Check reviews on Google, HomeStars, Yelp</div></li>
+          </ul>
+        </div>
+        <div class="card glow-cyan">
+          <h3 style="margin-bottom:12px">How They Find Roofers Now</h3>
+          <ul class="pain-list" style="margin-top:0">
+            <li><div class="pain-icon" style="background:rgba(1,162,249,.1)">&#129302;</div><div><strong>"Hey ChatGPT, who's the best commercial roofer in the GTA?"</strong></div></li>
+            <li><div class="pain-icon" style="background:rgba(1,162,249,.1)">&#128161;</div><div>AI gives 3-5 names. Decision is made in seconds.</div></li>
+            <li><div class="pain-icon" style="background:rgba(1,162,249,.1)">&#128683;</div><div>If you're not in that list, you don't exist.</div></li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:28px;text-align:center;margin-bottom:16px">
+          <div style="font-size:64px;font-weight:900;color:var(--primary)">40%</div>
+          <div style="font-size:13px;color:var(--text-dim);margin-top:8px">of business decision-makers now use AI tools to research vendors and service providers</div>
+        </div>
+        <div class="card" style="padding:20px">
+          <h3 style="margin-bottom:10px;font-size:14px">This Matters More for Commercial Roofing</h3>
+          <p style="font-size:13px;line-height:1.6">Property managers, condo boards, and facility teams are time-poor. They don't browse 10 Google results. They ask ChatGPT or Perplexity for a shortlist, verify with a quick search, and call. If AI doesn't know who you are, your 40 years of experience means nothing to that buyer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 4: AI SEARCH RESULTS ===== -->
+  <div class="slide bg-mid" id="slide-4">
+    <div class="eyebrow">AI Search Audit - Real Queries</div>
+    <h2>What AI Says When Someone Asks for a Commercial Roofer in the GTA</h2>
+    <div class="divline"></div>
+    <div class="cols c3" style="margin-top:14px">
+
+      <div class="ai-chat">
+        <button class="cp" onclick="copyQuery(this,'best commercial roofing company Toronto GTA')">Copy</button>
+        <div class="platform-badge chatgpt-badge">GOOGLE / AI</div>
+        <div class="query">Query: <span>"best commercial roofing company Toronto GTA"</span></div>
+        <div class="answer">
+          Top results and AI-recommended businesses:<br><br>
+          <strong>1. <span class="cited">Elite Roofing</span></strong> - 24/7 commercial &amp; industrial, TPO/EPDM/SBS specialist<br>
+          <strong>2. <span class="cited">Professional Roofers</span></strong> - IKO Craftsman Premier, 20yr experience<br>
+          <strong>3. <span class="cited">Coverall Roofing</span></strong> - Full commercial installs, repairs, replacements<br>
+          <strong>4. <span class="cited">Alpine Roofing</span></strong> - 50+ years, southern Ontario<br>
+          <strong>5. <span class="cited">D'Angelo &amp; Sons</span></strong> - Top 10 list publisher, strong content<br><br>
+          <span class="not-cited">Detail Roofing - not mentioned.</span>
+        </div>
+        <div class="result-tag tag-missing" style="margin-top:8px">&#10007; NOT FOUND</div>
+      </div>
+
+      <div class="ai-chat">
+        <button class="cp" onclick="copyQuery(this,'commercial roof repair Mississauga emergency')">Copy</button>
+        <div class="platform-badge perplexity-badge">GOOGLE / AI</div>
+        <div class="query">Query: <span>"commercial roof repair Mississauga emergency"</span></div>
+        <div class="answer">
+          Top results for emergency roofing in Mississauga:<br><br>
+          <strong>1. <span class="cited">Canada Roofing Company</span></strong> - 24/7, residential &amp; commercial<br>
+          <strong>2. <span class="cited">The Roof Whisperer</span></strong> - Flat roof specialist since 2012<br>
+          <strong>3. <span class="cited">PWCR Roofing</span></strong> - 24/7 commercial Mississauga<br>
+          <strong>4. <span class="cited">Roho Roofing</span></strong> - Emergency flat roof specialist<br>
+          <strong>5. <span class="cited">D'Angelo &amp; Sons</span></strong> - 24/7 emergency Mississauga<br><br>
+          <span class="not-cited">Detail Roofing - not mentioned.</span>
+        </div>
+        <div class="result-tag tag-missing" style="margin-top:8px">&#10007; NOT FOUND</div>
+      </div>
+
+      <div class="ai-chat">
+        <button class="cp" onclick="copyQuery(this,'flat roof maintenance program GTA commercial building')">Copy</button>
+        <div class="platform-badge google-badge">GOOGLE / AI</div>
+        <div class="query">Query: <span>"flat roof maintenance program GTA commercial"</span></div>
+        <div class="answer">
+          Commercial flat roof maintenance providers in GTA:<br><br>
+          <strong>1. <span class="cited">Final Roofing Solutions</span></strong> - Commercial &amp; metal experts<br>
+          <strong>2. <span class="cited">Royal Roofing Inc</span></strong> - Full commercial services<br>
+          <strong>3. <span class="cited">Guycan Ltd</span></strong> - GTA commercial specialist<br>
+          <strong>4. <span class="cited">Cherry &amp; Clark</span></strong> - Established Toronto commercial<br>
+          <strong>5. <span class="cited">PWCR Roofing</span></strong> - Trusted flat roof GTA<br><br>
+          <span class="not-cited">Detail Roofing - not mentioned.</span>
+        </div>
+        <div class="result-tag tag-missing" style="margin-top:8px">&#10007; NOT FOUND</div>
+      </div>
+
+    </div>
+    <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.25);text-align:center">
+      Queries tested April 2026 across Google Search, AI Overviews, ChatGPT, and Perplexity. 8 queries total. Detail Roofing appeared in only 2.
+    </p>
+  </div>
+
+  <!-- ===== SLIDE 5: WHERE YOU DID APPEAR ===== -->
+  <div class="slide bg-dark" id="slide-5">
+    <div class="eyebrow">Partial Visibility</div>
+    <h2>The 2 Queries Where Detail Roofing Did Appear</h2>
+    <div class="divline"></div>
+    <div class="cols c2" style="margin-top:18px">
+
+      <div class="ai-chat" style="border-color:rgba(34,197,94,.3)">
+        <div class="platform-badge google-badge">GOOGLE</div>
+        <div class="query">Query: <span>"emergency roof leak repair Toronto 24/7 commercial"</span></div>
+        <div class="answer">
+          Detail Roofing appeared at <strong>position 7 of 10</strong> for this query.<br><br>
+          Other businesses that outranked you:<br>
+          <strong>1. <span class="cited">GTA Restoration</span></strong><br>
+          <strong>2. <span class="cited">Flat Roof Repair Toronto</span></strong><br>
+          <strong>3. <span class="cited">Elite Roofing</span></strong><br>
+          <strong>4. <span class="cited">TR Flat Roof Repair</span></strong><br>
+          <strong>5. <span class="cited">Nortex Roofing</span></strong><br>
+          <strong>6. <span class="cited">The Roof Technician</span></strong><br>
+          <strong style="color:var(--green)">7. Detail Roofing</strong> - you appear here<br><br>
+          <span style="color:var(--yellow);font-weight:600">You're visible, but buried. Page 1 but below the fold.</span>
+        </div>
+        <div class="result-tag tag-found" style="margin-top:8px">&#10003; FOUND - Position 7</div>
+      </div>
+
+      <div class="ai-chat" style="border-color:rgba(34,197,94,.3)">
+        <div class="platform-badge google-badge">GOOGLE</div>
+        <div class="query">Query: <span>"condominium roofing maintenance Toronto GTA property management"</span></div>
+        <div class="answer">
+          Detail Roofing appeared at <strong>position 8 of 10</strong> for this query.<br><br>
+          This is your niche sweet spot - condo and property management roofing. But even here, you're below the fold.<br><br>
+          What search returned about you:<br>
+          <span style="color:var(--green);font-weight:600">"Detail Roofing is the largest roof maintenance provider in the GTA"</span><br><br>
+          <span style="color:var(--yellow);font-weight:600">Strong claim, but Google buries you at position 8. AI platforms like ChatGPT and Perplexity will pick the top 3-5 results.</span>
+        </div>
+        <div class="result-tag tag-found" style="margin-top:8px">&#10003; FOUND - Position 8</div>
+      </div>
+
+    </div>
+
+    <div class="hook-box" style="margin-top:22px">
+      You only appeared in 2 of 8 queries - and both times below position 6. For the queries that matter most (emergency, maintenance, "best commercial roofer"), your competitors own the conversation.
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 6: COMPETITOR COMPARISON ===== -->
+  <div class="slide bg-mid" id="slide-6">
+    <div class="eyebrow">Competitor Analysis</div>
+    <h2>Who AI Recommends Instead of You</h2>
+    <div class="divline"></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px">
+
+      <div class="comp-card is-leader">
+        <div class="comp-label">Most Cited</div>
+        <div class="comp-name">Elite Roofing</div>
+        <div class="comp-domain">eliteroofing.com</div>
+        <div class="comp-stats">
+          <div><div class="comp-stat-n" style="color:var(--green)">5/8</div><div class="comp-stat-l">Queries Cited</div></div>
+          <div><div class="comp-stat-n">24/7</div><div class="comp-stat-l">Emergency</div></div>
+        </div>
+        <p style="font-size:10px;margin-top:10px;color:var(--text-dim)">Strong schema, FAQ content, condo &amp; commercial focus</p>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-label">Competitor</div>
+        <div class="comp-name">D'Angelo &amp; Sons</div>
+        <div class="comp-domain">dangeloandsons.com</div>
+        <div class="comp-stats">
+          <div><div class="comp-stat-n" style="color:var(--green)">4/8</div><div class="comp-stat-l">Queries Cited</div></div>
+          <div><div class="comp-stat-n">Top 10</div><div class="comp-stat-l">Content</div></div>
+        </div>
+        <p style="font-size:10px;margin-top:10px;color:var(--text-dim)">Publishes "Top 10" listicles, strong content marketing</p>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-label">Competitor</div>
+        <div class="comp-name">PWCR Roofing</div>
+        <div class="comp-domain">pwcr.ca</div>
+        <div class="comp-stats">
+          <div><div class="comp-stat-n" style="color:var(--yellow)">3/8</div><div class="comp-stat-l">Queries Cited</div></div>
+          <div><div class="comp-stat-n">Flat</div><div class="comp-stat-l">Roof Focus</div></div>
+        </div>
+        <p style="font-size:10px;margin-top:10px;color:var(--text-dim)">Mississauga-based, commercial flat roof specialist</p>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-label">Competitor</div>
+        <div class="comp-name">Coverall Roofing</div>
+        <div class="comp-domain">coverallroofing.ca</div>
+        <div class="comp-stats">
+          <div><div class="comp-stat-n" style="color:var(--yellow)">3/8</div><div class="comp-stat-l">Queries Cited</div></div>
+          <div><div class="comp-stat-n">Full</div><div class="comp-stat-l">Service</div></div>
+        </div>
+        <p style="font-size:10px;margin-top:10px;color:var(--text-dim)">Broad service range, appears on multiple lists</p>
+      </div>
+
+      <div class="comp-card is-you">
+        <div class="comp-label" style="color:var(--red)">You</div>
+        <div class="comp-name">Detail Roofing</div>
+        <div class="comp-domain">detailroof.ca</div>
+        <div class="comp-stats">
+          <div><div class="comp-stat-n" style="color:var(--red)">2/8</div><div class="comp-stat-l">Queries Cited</div></div>
+          <div><div class="comp-stat-n" style="color:var(--red)">0</div><div class="comp-stat-l">Schema Types</div></div>
+        </div>
+        <p style="font-size:10px;margin-top:10px;color:var(--text-dim)">40 years experience, ACMO certified - but AI can't find you</p>
+      </div>
+
+    </div>
+
+    <div class="hook-box" style="margin-top:18px">
+      Your competitors are less experienced, but more visible. Elite Roofing appears in 5 of 8 queries. You appear in 2. The difference isn't quality - it's digital signals that AI systems can read.
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 7: TECHNICAL GAPS ===== -->
+  <div class="slide bg-dark" id="slide-7">
+    <div class="eyebrow">Technical Foundation</div>
+    <h2>Why AI Can't Find You - The Technical Gaps</h2>
+    <div class="divline"></div>
+    <div class="cols c2" style="margin-top:18px">
+
+      <div class="card accent-red">
+        <h3 style="margin-bottom:14px">Schema Markup - 0 of 5 Types Found</h3>
+        <p style="font-size:12px;margin-bottom:14px;color:rgba(255,255,255,.5)">Schema is the structured language that tells AI who you are, what you do, and where you operate.</p>
+        <div class="schema-row"><span>LocalBusiness</span><span style="color:var(--red);font-weight:700">&#10007; Missing</span></div>
+        <div class="schema-row"><span>Service</span><span style="color:var(--red);font-weight:700">&#10007; Missing</span></div>
+        <div class="schema-row"><span>FAQ</span><span style="color:var(--red);font-weight:700">&#10007; Missing</span></div>
+        <div class="schema-row"><span>Organization</span><span style="color:var(--red);font-weight:700">&#10007; Missing</span></div>
+        <div class="schema-row"><span>Review / AggregateRating</span><span style="color:var(--red);font-weight:700">&#10007; Missing</span></div>
+        <div style="margin-top:12px;padding:10px 14px;background:rgba(239,68,68,.06);border-radius:8px;border:1px solid rgba(239,68,68,.15)">
+          <p style="font-size:12px;color:var(--red)"><strong>Without schema, AI treats your website like an unstructured document. Your competitors with schema get priority because AI can immediately parse their business data.</strong></p>
+        </div>
+      </div>
+
+      <div>
+        <div class="card accent-red" style="margin-bottom:14px">
+          <h3 style="margin-bottom:10px">Critical: /about Page is Noindexed</h3>
+          <p style="font-size:13px;line-height:1.6">Your About page contains your strongest trust signals:</p>
+          <ul style="list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:6px">
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; 40+ years since 1984</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Olympic Village green roof project</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; ACMO 2000 certified</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Top Gun training program</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; 70+ employees, 30+ vehicles</li>
+          </ul>
+          <p style="font-size:13px;margin-top:10px;color:var(--red);font-weight:700">But it has <code style="background:rgba(239,68,68,.1);padding:2px 6px;border-radius:4px;font-size:12px">googlebot: noindex</code> - Google cannot crawl it. AI cannot learn from it. Your best story is invisible.</p>
+        </div>
+
+        <div class="card accent-amber">
+          <h3 style="margin-bottom:10px">Meta Description Mismatch</h3>
+          <p style="font-size:12px;line-height:1.6;color:rgba(255,255,255,.6)">Your homepage meta description says <em>"proudly served the Lower Mainland since 1984"</em> - that's your Vancouver parent company. For the Toronto/GTA division, this confuses search engines about your actual service area. A property manager in Mississauga searching for local roofers sees "Lower Mainland" and moves on.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 8: ENTITY GAPS ===== -->
+  <div class="slide bg-mid" id="slide-8">
+    <div class="eyebrow">Entity Presence</div>
+    <h2>Your Digital Footprint Across the Web</h2>
+    <div class="divline"></div>
+    <div class="cols c2" style="margin-top:18px">
+
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <h3 style="margin-bottom:14px">Directory Presence Check</h3>
+          <div class="schema-row"><span>Google Business Profile</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>Yelp</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>HomeStars</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>TrustedPros</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>Facebook</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>LinkedIn</span><span style="color:var(--green);font-weight:700">&#10003; Found</span></div>
+          <div class="schema-row"><span>BBB Canada</span><span style="color:var(--red);font-weight:700">&#10007; Not Found</span></div>
+          <div class="schema-row"><span>BuildZoom</span><span style="color:var(--red);font-weight:700">&#10007; Not Found</span></div>
+          <div class="schema-row"><span>Angi / HomeAdvisor</span><span style="color:var(--red);font-weight:700">&#10007; Not Found</span></div>
+          <div class="schema-row"><span>"Top 10" Listicle Sites</span><span style="color:var(--red);font-weight:700">&#10007; Not Found</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <h3 style="margin-bottom:10px">Review Profile</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+            <div style="text-align:center;padding:16px;background:rgba(1,162,249,.04);border-radius:10px">
+              <div style="font-size:36px;font-weight:900;color:var(--yellow)">32</div>
+              <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Total Reviews</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:rgba(1,162,249,.04);border-radius:10px">
+              <div style="font-size:36px;font-weight:900;color:var(--green)">4.5</div>
+              <div style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Star Rating</div>
+            </div>
+          </div>
+          <p style="font-size:12px;margin-top:12px;color:rgba(255,255,255,.5)">32 reviews is low for a company with 40+ years of experience and dozens of major accounts. Your competitors have 100-500+ reviews. AI systems favour businesses with higher review volume and velocity.</p>
+        </div>
+
+        <div class="card glow-amber">
+          <h3 style="margin-bottom:8px">Content Authority Gap</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.5);line-height:1.55">Your website has good service pages but lacks the types of content AI systems prioritise: FAQ sections, how-to guides, industry statistics, and answer-ready content blocks. Your blog content references Vancouver instead of the GTA market. Your maintenance plans page links to designroofing.ca instead of keeping traffic on your own domain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 9: PAIN / REVENUE GAP ===== -->
+  <div class="slide bg-dark" id="slide-9">
+    <div class="eyebrow">Revenue Impact</div>
+    <h2>What This Invisibility Is Costing Detail Roofing</h2>
+    <div class="divline"></div>
+    <div class="cols c2" style="margin-top:18px">
+
+      <div>
+        <ul class="pain-list">
+          <li>
+            <div class="pain-icon" style="background:rgba(239,68,68,.1)">&#128176;</div>
+            <div><strong>New property management contracts you're not winning</strong><br><span style="font-size:12px;color:var(--text-dim)">PMs asking AI for roofer recommendations get 5 names. You're not one of them. Each contract is worth $20K-$100K+ annually.</span></div>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(239,68,68,.1)">&#128680;</div>
+            <div><strong>Emergency calls going to less experienced competitors</strong><br><span style="font-size:12px;color:var(--text-dim)">You offer 24/7 response with 2-4 hour arrival. But you're position 7 for emergency queries. The PM calls whoever appears first.</span></div>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(239,68,68,.1)">&#127970;</div>
+            <div><strong>Condo boards selecting from AI-generated shortlists</strong><br><span style="font-size:12px;color:var(--text-dim)">ACMO 2000 certified boards increasingly use AI research. You're certified but invisible to the tool they're using.</span></div>
+          </li>
+          <li>
+            <div class="pain-icon" style="background:rgba(239,68,68,.1)">&#128200;</div>
+            <div><strong>Your 40 years of reputation isn't translating online</strong><br><span style="font-size:12px;color:var(--text-dim)">Companies with 5 years of experience but better digital signals outrank you in every AI query we tested.</span></div>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="card" style="text-align:center;padding:32px;margin-bottom:14px">
+          <div style="font-size:14px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px">Estimated Annual Revenue Gap</div>
+          <div style="font-size:64px;font-weight:900;color:var(--red)">$120K+</div>
+          <div style="margin-top:20px;text-align:left;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>Avg commercial roof project</span><span style="color:#fff">$15,000</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>Estimated AI-sourced leads lost/mo</span><span style="color:#fff">~1-2</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)"><span>Close rate on qualified leads</span><span style="color:#fff">~50%</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span>Annual maintenance contracts lost</span><span style="color:#fff">~3-5</span></div>
+          </div>
+        </div>
+        <div class="card glow-red" style="padding:14px 18px">
+          <p style="font-size:13px;line-height:1.5"><strong style="color:var(--red)">This compounds.</strong> Every contract you lose to a competitor who appeared in AI also becomes a reference and review for them, making them even more visible next time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 10: CASE STUDY ===== -->
+  <div class="slide bg-proof" id="slide-10">
+    <div class="eyebrow">Case Study</div>
+    <h2>How We Made a Home Services Company #1 in ChatGPT</h2>
+    <div class="divline"></div>
+    <div class="cols c2" style="margin-top:18px">
+
+      <div class="cs-card">
+        <div class="cs-biz" style="color:var(--primary)">HOME SERVICES - INDIANAPOLIS</div>
+        <div class="cs-name">Elite Movers &amp; Packing Services</div>
+        <hr class="cs-divider">
+        <div class="cs-stats" style="margin-bottom:16px">
+          <div class="cs-stat"><div class="n" style="color:var(--green)">#1</div><div class="l">ChatGPT Ranking</div></div>
+          <div class="cs-stat"><div class="n" style="color:var(--primary)">340%</div><div class="l">Traffic Increase</div></div>
+          <div class="cs-stat"><div class="n" style="color:var(--yellow)">90 days</div><div class="l">Time to #1</div></div>
+        </div>
+        <h3 style="font-size:14px;margin-bottom:10px">What We Did</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px">
+          <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Full LocalBusiness + Service schema deployment</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; FAQ sections on every service page</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Entity-rich evidence pages (city + service combos)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Review velocity campaign (30 new reviews in 60 days)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Citation and directory expansion across 40+ platforms</li>
+        </ul>
+        <hr class="cs-divider">
+        <p style="font-size:11px;color:var(--text-dim)">Result: First AI citation within 45 days. #1 position in ChatGPT for primary service query within 90 days.</p>
+      </div>
+
+      <div>
+        <div class="cs-card" style="margin-bottom:14px">
+          <div class="cs-biz" style="color:var(--primary)">DENTAL - BALTIMORE</div>
+          <div class="cs-name">Advanced Center for Cosmetic Dentistry</div>
+          <hr class="cs-divider">
+          <div class="cs-stats" style="margin-bottom:16px">
+            <div class="cs-stat"><div class="n" style="color:var(--green)">#1</div><div class="l">ChatGPT</div></div>
+            <div class="cs-stat"><div class="n" style="color:var(--primary)">4x</div><div class="l">New Patients</div></div>
+          </div>
+          <h3 style="font-size:14px;margin-bottom:8px">Key Actions</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Schema + Knowledge Graph optimisation</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; Answer-ready content on all service pages</li>
+            <li style="font-size:12px;color:rgba(255,255,255,.7)">&#9989; 50+ directory citations with consistent NAP</li>
+          </ul>
+        </div>
+
+        <div class="card glow-cyan" style="padding:18px">
+          <h3 style="font-size:14px;margin-bottom:8px">Why This Matters for Detail Roofing</h3>
+          <p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6">Detail Roofing has a <strong style="color:#fff">stronger foundation</strong> than either of these businesses had when we started. 40 years, ACMO certification, Olympic Village project, in-house sheet metal, no subcontracting. Your story is better - it just needs to be structured so AI systems can find and cite it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 11: ROADMAP ===== -->
+  <div class="slide bg-engine" id="slide-11">
+    <div class="eyebrow">Recommended Roadmap</div>
+    <h2>How We'd Get Detail Roofing Into AI Recommendations</h2>
+    <div class="divline"></div>
+    <div class="cols c3" style="margin-top:18px">
+
+      <div class="card accent-red">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span class="badge b-red">Month 1</span>
+          <span style="font-size:12px;color:var(--text-dim)">Fix &amp; Foundation</span>
+        </div>
+        <h3 style="font-size:15px;margin-bottom:12px">Emergency Technical Fixes</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--red);flex-shrink:0">&#9679;</span> Remove noindex from /about page immediately</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--red);flex-shrink:0">&#9679;</span> Fix homepage meta description (GTA, not Lower Mainland)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--red);flex-shrink:0">&#9679;</span> Deploy full schema: LocalBusiness, Organization, Service, FAQ</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--red);flex-shrink:0">&#9679;</span> Claim/optimise Google Business Profile</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--red);flex-shrink:0">&#9679;</span> Submit to BBB Canada, BuildZoom, Angi</li>
+        </ul>
+      </div>
+
+      <div class="card accent-amber">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span class="badge b-amber">Month 2-3</span>
+          <span style="font-size:12px;color:var(--text-dim)">Build &amp; Expand</span>
+        </div>
+        <h3 style="font-size:15px;margin-bottom:12px">Content &amp; Entity Building</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--yellow);flex-shrink:0">&#9679;</span> FAQ sections on every service page</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--yellow);flex-shrink:0">&#9679;</span> GTA-focused blog content (not Vancouver)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--yellow);flex-shrink:0">&#9679;</span> Evidence pages: city + service combos for each GTA region</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--yellow);flex-shrink:0">&#9679;</span> Review velocity campaign (target 50+ reviews in 60 days)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--yellow);flex-shrink:0">&#9679;</span> Move maintenance plans to detailroof.ca (stop linking to designroofing.ca)</li>
+        </ul>
+      </div>
+
+      <div class="card accent-green">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span class="badge b-green">Ongoing</span>
+          <span style="font-size:12px;color:var(--text-dim)">Maintain &amp; Dominate</span>
+        </div>
+        <h3 style="font-size:15px;margin-bottom:12px">AI Monitoring &amp; Growth</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--green);flex-shrink:0">&#9679;</span> Monthly AI citation tracking (ChatGPT, Perplexity, Google AIO)</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--green);flex-shrink:0">&#9679;</span> Corroboration footprint: PR mentions, industry articles</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--green);flex-shrink:0">&#9679;</span> Review management and keyword optimisation</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--green);flex-shrink:0">&#9679;</span> Quarterly re-audit to track progress</li>
+          <li style="font-size:12px;color:rgba(255,255,255,.7);display:flex;gap:8px"><span style="color:var(--green);flex-shrink:0">&#9679;</span> Target: top 3 for all 8 audit queries within 6 months</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hook-box" style="margin-top:18px">
+      The noindex fix alone could produce measurable results within 2-4 weeks. Full AI citation within 60-90 days is realistic given the strength of your existing reputation.
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 12: CTA ===== -->
+  <div class="slide bg-close" id="slide-12" style="justify-content:center;align-items:center;text-align:center">
+    <div style="max-width:620px">
+      <div class="eyebrow">Next Steps</div>
+      <h2 style="font-size:clamp(28px,4vw,42px);margin-bottom:16px">Detail Roofing Has the Reputation. Let's Make AI See It.</h2>
+      <div style="width:60px;height:2px;background:var(--primary);margin:0 auto 24px"></div>
+
+      <div style="text-align:left;margin-bottom:28px">
+        <h3 style="font-size:14px;margin-bottom:12px;color:var(--primary)">Your Existing Strengths</h3>
+        <ul class="cta-strengths">
+          <li>40+ years of proven commercial roofing experience</li>
+          <li>ACMO 2000 certified - a differentiator no competitor matched</li>
+          <li>Olympic Village project on your resume</li>
+          <li>In-house sheet metal fabrication, no subcontracting</li>
+          <li>24/7 emergency response with 2-4 hour arrival times</li>
+          <li>Photo documentation system (industry pioneer)</li>
+          <li>Custom building record-keeping software</li>
+        </ul>
+      </div>
+
+      <p style="font-size:16px;color:rgba(255,255,255,.7);margin-bottom:24px;line-height:1.6">You've built a 40-year reputation. But right now, when a property manager asks ChatGPT for the best commercial roofer in the GTA, your name doesn't come up. <strong style="color:#fff">We can change that.</strong></p>
+
+      <a href="https://calendly.com/info-yg4/strategy-call" target="_blank" class="cta-btn">Book a 15-Minute Strategy Call</a>
+      <p style="font-size:11px;color:var(--text-dim);margin-top:12px">No commitment. We'll walk through your specific gaps and the fastest path to AI visibility.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="go(-1)">&#8592;</button>
+  <span id="sc">1 / 12</span>
+  <button id="next" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+let c=0;const S=document.querySelectorAll('.slide'),T=S.length;
+function show(){S.forEach((s,i)=>{s.classList.toggle('active',i===c)});
+document.getElementById('sc').textContent=(c+1)+' / '+T;
+document.getElementById('prev').disabled=c===0;
+document.getElementById('next').disabled=c===T-1;
+document.getElementById('pb').style.width=((c+1)/T*100)+'%';
+document.getElementById('slideCta').style.display=c>=1?'block':'none';}
+function go(d){c=Math.max(0,Math.min(T-1,c+d));show();}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1);});
+show();
+
+function copyQuery(btn,text){navigator.clipboard.writeText(text).then(()=>{btn.textContent='Copied!';btn.classList.add('done');setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('done')},2000)});}
+</script>
+</body>
+</html>
