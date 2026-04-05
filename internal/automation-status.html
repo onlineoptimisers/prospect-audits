@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Status - Online Optimisers - April 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a1a;--surface:#111128;--surface2:#161638;--border:rgba(255,255,255,0.08);--white:#fff;--muted:#8b8ba3;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#005DE0;--cyan:#06B6D4;--purple:#a855f7;--gold:#D4A853}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body>*{position:relative;z-index:1}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+h1{font-size:36px;font-weight:800;text-align:center;margin-bottom:8px}
+h1 .grad{background:linear-gradient(90deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{text-align:center;color:var(--muted);font-size:15px;font-weight:500;margin-bottom:48px}
+.stats-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:48px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px 32px;text-align:center;min-width:130px;transition:border-color .2s}
+.stat-card:hover{border-color:var(--cyan)}
+.stat-num{font-size:36px;font-weight:800;line-height:1}
+.stat-num.green{color:var(--green)}.stat-num.amber{color:var(--amber)}.stat-num.blue{color:var(--cyan)}.stat-num.purple{color:var(--purple)}.stat-num.gold{color:var(--gold)}
+.stat-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+h2{font-size:22px;font-weight:800;margin:48px 0 20px;padding-left:14px;border-left:4px solid var(--blue)}
+.table-wrap{overflow-x:auto;margin-bottom:32px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--surface2);color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--white)}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.badge.live{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.badge.built{background:rgba(6,182,212,.15);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
+.badge.blocked{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.badge.planned{background:rgba(139,139,163,.1);color:var(--muted);border:1px solid rgba(139,139,163,.2)}
+.badge.next{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+.badge.mudi{background:rgba(212,168,83,.15);color:var(--gold);border:1px solid rgba(212,168,83,.4);font-size:10px;margin-left:6px}
+.bar-wrap{width:100px;height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .4s}
+.bar-fill.high{background:var(--green)}.bar-fill.mid{background:var(--amber)}.bar-fill.low{background:var(--red)}
+.cost{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--cyan)}
+.section-note{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin:20px 0 32px;font-size:14px;color:var(--muted);line-height:1.7}
+.section-note strong{color:var(--white)}
+.footer{text-align:center;padding:40px 0 20px;font-size:12px;color:rgba(255,255,255,.25)}
+
+/* Info button */
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--cyan);background:transparent;color:var(--cyan);font-size:11px;font-weight:800;font-style:italic;font-family:'Georgia',serif;cursor:pointer;margin-left:8px;vertical-align:middle;transition:all .2s;flex-shrink:0;line-height:1}
+.info-btn:hover{background:var(--cyan);color:var(--bg)}
+.info-btn.active{background:var(--cyan);color:var(--bg)}
+
+/* Info panel */
+.info-panel{display:none;background:var(--surface2);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:16px 20px;margin:8px 0 4px;font-size:13px;line-height:1.7;animation:slideDown .2s ease}
+.info-panel.open{display:block}
+.info-panel .info-label{font-size:10px;font-weight:800;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.info-panel .info-text{color:var(--muted);font-weight:500}
+.info-panel .info-output{margin-top:10px}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Name with info */
+.name-wrap{display:flex;align-items:flex-start;gap:0}
+.name-col{flex:1}
+
+@media(max-width:700px){.stats-row{gap:12px}.stat-card{padding:16px 20px;min-width:100px}.stat-num{font-size:28px}table{font-size:12px}.info-btn{width:18px;height:18px;font-size:10px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1><span class="grad">Automation Status</span></h1>
+<p class="subtitle">Online Optimisers - April 2026 - Everything built, live, and coming next</p>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-num green">3</div><div class="stat-label">n8n Workflows Live</div></div>
+  <div class="stat-card"><div class="stat-num blue">16</div><div class="stat-label">Skills Working</div></div>
+  <div class="stat-card"><div class="stat-num amber">3</div><div class="stat-label">Built, Not Deployed</div></div>
+  <div class="stat-card"><div class="stat-num gold">10</div><div class="stat-label">In Pipeline</div></div>
+  <div class="stat-card"><div class="stat-num purple">32</div><div class="stat-label">Total Automations</div></div>
+</div>
+
+<!-- ═══════ N8N WORKFLOWS ═══════ -->
+<h2>n8n Workflows</h2>
+<div class="section-note">These run on <strong>onlineoptimisers.app.n8n.cloud</strong>. 3 are live and listening 24/7. 3 are built as JSON files, ready to import. Click <button class="info-btn" style="pointer-events:none;vertical-align:baseline">i</button> for plain-English explanation.</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Automation</th><th>Status</th><th>Cost/Run</th><th>Completeness</th><th>Blocker</th></tr></thead>
+<tbody>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Lead Strike (Audit Pipeline)</strong><br><span style="color:var(--muted);font-size:11px">Prospect domain -> 16-slide HTML audit deck</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">When a prospect replies to our email or we enter their website, this automatically checks how visible their business is on ChatGPT, Perplexity, and Google AI. It then builds a professional 16-slide presentation showing exactly where they're invisible and which competitors show up instead. The whole thing takes about 90 seconds.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">A branded HTML slide deck hosted at a shareable link. Ready to send or screen-share on a call.</div></div></div></td><td><span class="badge live">LIVE</span></td><td class="cost">$0.35</td><td><div class="bar-wrap"><div class="bar-fill high" style="width:90%"></div></div> 90%</td><td>Auto GitHub push</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Instantly Reply Relay</strong><br><span style="color:var(--muted);font-size:11px">Email reply -> triggers audit pipeline</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">When a prospect replies to one of our cold emails in Instantly, this picks up the reply and automatically fires off the audit pipeline above. So the moment someone says "yes, I'm interested", they get a personalised audit deck within minutes, with zero manual work.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Triggers the Lead Strike pipeline automatically. No human in the loop.</div></div></div></td><td><span class="badge live">LIVE</span></td><td class="cost">$0.00</td><td><div class="bar-wrap"><div class="bar-fill high" style="width:85%"></div></div> 85%</td><td>Per-campaign filter</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Lead List Builder</strong><br><span style="color:var(--muted);font-size:11px">Niche + city -> Maps -> Hunter emails -> Instantly</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Type in a niche (e.g. "dentist") and a city (e.g. "Nashville TN"), and this scrapes Google Maps for every business in that area, finds the owner's email address, verifies it, and imports the entire list into an Instantly cold email campaign, ready to send.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">A clean, verified lead list loaded into Instantly with name, email, phone, website, city, niche, and Google reviews data.</div></div></div></td><td><span class="badge live">LIVE</span></td><td class="cost">$0.002</td><td><div class="bar-wrap"><div class="bar-fill high" style="width:90%"></div></div> 90%</td><td>-</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Monthly Data Pull</strong><br><span style="color:var(--muted);font-size:11px">Auto-pulls rankings/backlinks for 9 clients</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">On the 1st of every month, this automatically pulls ranking positions, backlink counts, and domain strength for all 9 retainer clients and writes the data into a master Google Sheet. Saves about 3 hours of manual data collection per month.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Google Sheet updated with fresh SEO metrics for every client, ready for monthly reports.</div></div></div></td><td><span class="badge blocked">BLOCKED</span></td><td class="cost">$0.40</td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:70%"></div></div> 70%</td><td>Google OAuth setup</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>VSL B0 (PitchLane Replacement)</strong><br><span style="color:var(--muted);font-size:11px">Existing Loom video + website scroll BG</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Takes one of our pre-recorded sales videos and automatically puts the prospect's website scrolling in the background. The same method that closed 5-6 clients in 2025, but now fully automated instead of manually done by VAs. One penny per lead.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">A personalised MP4 video + animated GIF thumbnail, hosted and ready to embed in a cold email.</div></div></div></td><td><span class="badge built">BUILT</span></td><td class="cost">$0.01</td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:60%"></div></div> 60%</td><td>VPS deploy</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>VSL C (Hybrid AI Intro)</strong><br><span style="color:var(--muted);font-size:11px">ElevenLabs 5-10 sec + generic video body</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">An AI clone of Donal's voice says the prospect's name and company in the first 5-10 seconds ("Hey Mike, I was checking out Nashville Movers..."), then it cuts to a pre-recorded generic pitch. The personalised hook is what makes them watch, and it costs 6 cents instead of 50 cents for full AI.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Same as B0 but with a personalised voice intro. Higher reply rate expected.</div></div></div></td><td><span class="badge built">BUILT</span></td><td class="cost">$0.06</td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:50%"></div></div> 50%</td><td>VPS + ElevenLabs</td></tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- ═══════ CLAUDE CODE SKILLS ═══════ -->
+<h2>Claude Code Skills</h2>
+<div class="section-note"><strong>19 skills</strong> built as slash commands. 16 are working and tested. These run interactively in Claude Code sessions. Click <button class="info-btn" style="pointer-events:none;vertical-align:baseline">i</button> on any row for details.</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Skill</th><th>Category</th><th>Status</th><th>Completeness</th><th>Cost/Run</th></tr></thead>
+<tbody>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/quick-audit</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Drop in any business website URL, and Alex checks whether AI search engines (ChatGPT, Perplexity, Google AI) recommend that business. In under 5 minutes you get a polished 14-slide visual report showing their AI visibility score, who their competitors are in AI search, and exactly what's missing.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">A hosted HTML slide deck with a shareable link. Used to impress prospects fast.</div></div></div></td><td>Sales</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:95%"></div></div> 95%</td><td class="cost">$0.10-0.30</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/full-audit</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">The deep version of quick-audit. Runs 13 sections including backlink analysis, schema markup check, Google Maps presence, review intelligence, and competitor comparison across all 3 AI platforms. Takes about 10 minutes.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Comprehensive diagnostic report (markdown + styled HTML) with actionable roadmap.</div></div></div></td><td>Sales</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:95%"></div></div> 95%</td><td class="cost">$0.35-0.40</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/audit-deck</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Builds the polished 16-slide sales presentation version of an audit. This is the "send to the prospect" or "screen-share on a call" version with branded design, competitor cards, revenue gap calculations, case studies, and a Book a Call button.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">16-slide branded HTML deck with 3-tier link: local file, team preview, and client-facing short link.</div></div></div></td><td>Sales</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:95%"></div></div> 95%</td><td class="cost">$0.15-0.40</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/presentation</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">After a discovery call, this builds a 20-slide tailored sales presentation using data from the call transcript plus real SEO data. Shows the prospect's heatmap rankings, competitor landscape, and a custom roadmap based on what they told us on the call.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">20-slide white-themed presentation HTML, personalised with Fathom call intel + live data.</div></div></div></td><td>Sales</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:85%"></div></div> 85%</td><td class="cost">$0.90-1.10</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/vsl</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Creates a personalised outreach video for a prospect. Shows their website scrolling with Donal's face in the corner, mentions their name and company. The email includes an animated GIF preview that links to a landing page with the full video and a Book a Call button.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Video (MP4) + GIF thumbnail + landing page + draft email copy, all hosted and ready to send.</div></div></div></td><td>Sales</td><td><span class="badge built">BUILT</span></td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:55%"></div></div> 55%</td><td class="cost">$0.01-0.49</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/onboard</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">When a new client signs up, this runs the entire Day 1 setup: creates their Google Drive folder, populates their SEO onboarding sheet, drafts the welcome email, creates the access request email, and logs everything in the tracker. Replaces 2-3 hours of admin.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Google Drive folder + onboard sheet + welcome email draft + access request email draft + tracker updated.</div></div></div></td><td>Ops</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:80%"></div></div> 80%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/monthly-report</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Generates a styled monthly SEO report for a retainer client. Pulls in ranking data, traffic trends, backlink growth, and heatmap changes, then writes a plain-English summary explaining what happened and what's planned next month.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Branded HTML report with charts, metrics, and AI-written executive summary. Ready to email to client.</div></div></div></td><td>Delivery</td><td><span class="badge blocked">BLOCKED</span></td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:70%"></div></div> 70%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/monthly-report-heatmap</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Pulls keyword heatmap ranking data from the client's tracking sheet, compares this month vs last month, and shows which keywords improved, declined, or stayed flat. Helps identify which areas need attention.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Month-over-month heatmap comparison with trend analysis and keyword movement table.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill mid" style="width:75%"></div></div> 75%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/client-health</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Runs a health check on a client's SEO: current keyword rankings, domain authority, backlink profile, and technical issues. Flags anything that needs immediate attention before the client notices.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Health score dashboard with red/amber/green indicators and action items.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:85%"></div></div> 85%</td><td class="cost">$0.05</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/ai-keyword-gen</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Give it a niche and city, and it generates 25-30 search queries that real people would type into ChatGPT or Perplexity. These are the exact queries used in audits to test whether a business shows up in AI search.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">List of 25-30 citation-trigger queries, categorised by intent and priority.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/ai-schema-build</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Generates the structured data code (JSON-LD) that tells AI search engines who the business is, what services they offer, where they're located, and why they're trustworthy. This is the "digital ID card" that makes AI recommend them.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Ready-to-paste JSON-LD code blocks for LocalBusiness, Person, FAQ, Service, and HowTo schemas.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/ai-evidence-pages</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Creates content briefs for pages specifically designed to get cited by AI. These are "evidence pages" that answer the exact questions AI models ask when deciding which businesses to recommend.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Content briefs with target queries, recommended structure, word count, and entity coverage.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/ai-prompt-bank</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Generates a library of prompts that real users type into AI search engines for a specific niche and city. Tests each one live against ChatGPT and Perplexity to see who currently shows up. The starting point for any AI ranking strategy.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Prompt bank with live test results, competitor frequency data, and citation gap analysis.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:95%"></div></div> 95%</td><td class="cost">$0.05</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/ai-backlink-plan</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Compares the client's backlink profile against their top competitors and identifies the gap. Produces a prioritised list of link targets with outreach templates.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Backlink gap report with competitor comparison, target list, and draft outreach emails.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:90%"></div></div> 90%</td><td class="cost">$0.02</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/internal-links</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Crawls a client's website, maps all their pages by topic, and recommends which pages should link to each other. Internal linking is one of the easiest SEO wins and this automates the analysis.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Topic map + internal linking recommendations with exact anchor text and source/target pages.</div></div></div></td><td>Delivery</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:90%"></div></div> 90%</td><td class="cost">$0.05</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/client-update</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Drafts a professional client update email based on the latest monthly report. Translates raw SEO data into plain English that clients actually understand, with clear next steps.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Ready-to-send email draft with key wins, metrics, and action items for next month.</div></div></div></td><td>Comms</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/sesh</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Starts a structured work session. Reads the todo list, checks what's urgent, asks 6 kickoff questions, and locks in a session plan. Prevents "what should I work on today?" drift.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Locked session plan with one clear mission, time blocks, and priority tasks.</div></div></div></td><td>Admin</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/reflect</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">End-of-session review. Extracts what worked, what didn't, process improvements, and non-obvious learnings. Saves insights to memory so future sessions benefit from past mistakes.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Reflection saved to memory + session log updated.</div></div></div></td><td>Admin</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+<tr><td><div class="name-wrap"><div class="name-col"><strong>/pbp</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Quick orientation check mid-session. "What are we doing, what just happened, are we on track?" Prevents rabbit holes and keeps the session focused on the original mission.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Status check with current task, progress, and any drift warnings.</div></div></div></td><td>Admin</td><td><span class="badge live">LIVE</span></td><td><div class="bar-wrap"><div class="bar-fill high" style="width:100%"></div></div> 100%</td><td class="cost">free</td></tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- ═══════ OTHER TOOLS ═══════ -->
+<h2>Other Tools Built</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Tool</th><th>What</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>VSL Render Worker</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">A small server that runs on a VPS. It opens a prospect's website in a browser, records it scrolling as a video, overlays Donal's face and voice, and extracts an animated GIF preview. This is the engine behind the VSL video pipeline.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">API endpoints that n8n calls to render personalised videos.</div></div></div></td><td>Node.js/Express - Playwright + ffmpeg (4 endpoints)</td><td><span class="badge built">BUILT</span></td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Sales Coach</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">A desktop app that listens to Tomas's sales calls in real time, transcribes what's being said, and provides live coaching feedback on screen. Scores objection handling, suggests better responses, and flags missed opportunities as they happen.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Live on-screen coaching overlay + post-call scorecard.</div></div></div></td><td>Electron desktop app - Deepgram + Claude API</td><td><span class="badge built">BUILT</span></td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Google Workspace MCP</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Connects Claude Code directly to Google Sheets, Drive, and Docs. Alex can read and write spreadsheets, search Drive files, and create documents without you opening a browser.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Direct Claude Code access to all Google Workspace data.</div></div></div></td><td>MCP server for Sheets/Drive/Docs</td><td><span class="badge live">LIVE</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════ VSL OPTIONS ═══════ -->
+<h2>VSL Pipeline Options (New Build)</h2>
+<div class="section-note">5 options designed, easiest first. Replicates the 2025 method (managed by Johnny) that closed 5-6 clients. <strong>All code built, awaiting VPS deployment.</strong></div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Option</th><th>AI Voice?</th><th>Cost/Lead</th><th>Cost/1,000</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><strong>B0: PitchLane Replacement</strong><br><span style="color:var(--muted);font-size:11px">Existing Loom video + website scroll BG</span></td><td>No</td><td class="cost">$0.01</td><td class="cost">$10</td><td><span class="badge built">BUILT</span></td></tr>
+<tr><td>2</td><td><strong>B: + Name Overlay</strong><br><span style="color:var(--muted);font-size:11px">B0 + prospect name text on screen for 3 sec</span></td><td>No</td><td class="cost">$0.01</td><td class="cost">$10</td><td><span class="badge built">BUILT</span></td></tr>
+<tr><td>3</td><td><strong>C: Hybrid</strong><br><span style="color:var(--muted);font-size:11px">ElevenLabs AI intro 5-10 sec + generic video body</span></td><td>5-10 sec</td><td class="cost">$0.06</td><td class="cost">$59</td><td><span class="badge built">BUILT</span></td></tr>
+<tr><td>4</td><td><strong>E: Hybrid Audit</strong><br><span style="color:var(--muted);font-size:11px">/quick-audit real data + AI intro + audit deck recording</span></td><td>5-10 sec</td><td class="cost">$0.36</td><td class="cost">$359</td><td><span class="badge planned">DESIGNED</span></td></tr>
+<tr><td>5</td><td><strong>D: Full Audit VSL</strong><br><span style="color:var(--muted);font-size:11px">Everything AI-narrated with real data (Dream 100 only)</span></td><td>Full 60 sec</td><td class="cost">$0.49</td><td class="cost">$485</td><td><span class="badge planned">DESIGNED</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════ COMING NEXT ═══════ -->
+<h2>Coming Next - Pipeline</h2>
+<div class="section-note">10 high-impact automations on the roadmap, prioritised with input from <strong>Mudi (Tasken.ai)</strong>. Items marked <span class="badge mudi" style="margin:0">MUDI REC</span> are his top picks. Split into delivery (retain clients) and growth (get clients).</div>
+
+<h3 style="font-size:16px;font-weight:700;color:var(--green);margin:28px 0 16px;padding-left:14px;border-left:3px solid var(--green)">Phase 1: Delivery Efficiency</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Automation</th><th>Status</th><th>Stack</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Content Update Automation</strong><span class="badge mudi">MUDI #1</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Automatically finds client pages that are losing rankings, compares them against the pages that are now outranking them, rewrites the weak sections, and pushes the update to WordPress. The client's content stays competitive without manual content audits.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Updated WordPress pages with improved content, plus a change log for the monthly report.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">GSC + GA4 + DataForSEO + Claude + WordPress</td><td>Highest ROI delivery automation. Pages stay competitive automatically.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Client Health Alerts</strong><span class="badge mudi">MUDI REC</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Monitors every client's traffic, rankings, and technical health daily. If something drops significantly, it sends a Slack alert before the client notices. The retention weapon - clients never feel surprised by bad news.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Slack alert with what dropped, why (likely cause), and recommended fix. Auto-drafts the client email.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">GSC + GA4 + DataForSEO + n8n + Slack</td><td>Retention weapon. Catch problems before clients do.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Content Brief + WP Push</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Generates a complete content brief (target keywords, intent, structure, word count) and then writes the draft and publishes it as a WordPress draft, ready for review. One click from "we need a page" to "it's in the CMS".</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">WordPress draft post with optimized content, ready for human review and publish.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">DataForSEO + Claude + WordPress REST API</td><td>Delivery speed multiplier. Briefs become drafts instantly.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Keyword Clustering + Quick Wins</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Takes a client's keyword data, groups keywords by search intent (informational, transactional, local), and flags any keyword sitting in positions 4-15 as a "quick win" that could reach page 1 with small improvements.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Clustered keyword map + prioritised quick-win list with specific action items per keyword.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">DataForSEO + Claude + Google Sheets</td><td>Find the easy wins hiding in existing data.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 style="font-size:16px;font-weight:700;color:var(--purple);margin:28px 0 16px;padding-left:14px;border-left:3px solid var(--purple)">Phase 2: Growth Engine</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Automation</th><th>Status</th><th>Stack</th><th>Why it matters</th></tr></thead>
+<tbody>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Cold Email Personalisation</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Writes truly personalised cold email sequences using real data about each prospect: their Google review count, their AI visibility gaps, what their competitors are doing. Every email sounds like you actually researched them, because we did.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Personalised 3-step email sequence loaded into Instantly, ready to send.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">Lead data + Claude + Instantly</td><td>Scale outreach without sounding generic.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Upsell Trigger System</strong><span class="badge mudi">MUDI REC</span></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Monitors client accounts for signals that they're ready for more: rankings plateau, new keyword opportunities appear, their contract is approaching renewal, or a competitor just launched a new campaign. Auto-flags and drafts the upsell pitch.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Slack alert with upsell opportunity + draft proposal email.</div></div></div></td><td><span class="badge next">NEXT</span></td><td style="font-size:11px;color:var(--muted)">GSC + GA4 + DataForSEO + Claude + Slack</td><td>Never miss an upsell window. Revenue growth on autopilot.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>SEO Draft Writing System</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Writes full SEO-optimized page content from a brief: correct keywords, proper heading structure, internal links, schema-ready formatting. Human checkpoint is final edit only - the draft is 90% ready.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">WordPress draft with optimized content, suggested images, and internal link recommendations.</div></div></div></td><td><span class="badge planned">PLANNED</span></td><td style="font-size:11px;color:var(--muted)">Claude + WordPress REST API</td><td>Content production at 10x speed.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Competitor Tracking</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Watches each client's top 3-5 competitors for new pages, ranking gains, new backlinks, and content changes. Sends a weekly digest so we can react before the client even knows a competitor made a move.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Weekly Slack digest per client: what competitors did, impact on rankings, recommended response.</div></div></div></td><td><span class="badge planned">PLANNED</span></td><td style="font-size:11px;color:var(--muted)">DataForSEO + Firecrawl + Claude + Slack</td><td>Stay ahead of competitors, not react to them.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>Technical SEO Monitoring</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Regularly crawls client websites checking for broken links, missing canonical tags, slow pages, duplicate content, and indexing issues. Catches technical problems before they tank rankings.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Technical health report with issues ranked by severity and fix instructions.</div></div></div></td><td><span class="badge planned">PLANNED</span></td><td style="font-size:11px;color:var(--muted)">Firecrawl + GSC + Claude + n8n</td><td>Prevent technical SEO disasters.</td></tr>
+<tr><td><div class="name-wrap"><div class="name-col"><strong>AI Sales Coach</strong></div><button class="info-btn" onclick="toggleInfo(this)">i</button></div><div class="info-panel" data-info><div class="info-label">What it does</div><div class="info-text">Listens to Tomas's sales calls in real time, transcribes what's being said, and shows coaching prompts on screen: suggested responses to objections, missed questions to ask, and a live confidence score. Like having a senior sales coach whispering in your ear.</div><div class="info-output"><div class="info-label">Output</div><div class="info-text">Live on-screen coaching overlay during calls + post-call scorecard with improvement areas.</div></div></div></td><td><span class="badge built">BUILT</span></td><td style="font-size:11px;color:var(--muted)">Deepgram + Claude API + Electron</td><td>Close more deals. Every call gets better.</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════ INFRASTRUCTURE ═══════ -->
+<h2>Infrastructure</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Component</th><th>Status</th><th>Monthly Cost</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><strong>n8n Cloud Pro</strong></td><td><span class="badge live">LIVE</span></td><td class="cost">$20</td><td>3 active workflows, 3 pending import</td></tr>
+<tr><td><strong>GitHub Pages (audits)</strong></td><td><span class="badge live">LIVE</span></td><td class="cost">$0</td><td>10+ prospect audit decks hosted</td></tr>
+<tr><td><strong>DataForSEO</strong></td><td><span class="badge live">LIVE</span></td><td class="cost">$5-10</td><td>SERP, Maps, Backlinks, Ranked Keywords</td></tr>
+<tr><td><strong>Firecrawl</strong></td><td><span class="badge live">LIVE</span></td><td class="cost">per-call</td><td>Website scraping for audits + onboarding</td></tr>
+<tr><td><strong>Hunter.io</strong></td><td><span class="badge live">LIVE</span></td><td class="cost">$0 (trial)</td><td>Email finding for lead list builder</td></tr>
+<tr><td><strong>Hetzner VPS</strong></td><td><span class="badge blocked">IDLE</span></td><td class="cost">$27</td><td>Needs: VSL render worker deployment + possible downgrade to $5</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+  Online Optimisers - Automation Status Snapshot - Generated April 2026
+</div>
+
+</div>
+
+<script>
+function toggleInfo(btn) {
+  var panel = btn.closest('td').querySelector('[data-info]');
+  var wasOpen = panel.classList.contains('open');
+  // Close all open panels first
+  document.querySelectorAll('.info-panel.open').forEach(function(p) { p.classList.remove('open'); });
+  document.querySelectorAll('.info-btn.active').forEach(function(b) { b.classList.remove('active'); });
+  // Toggle this one
+  if (!wasOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>
