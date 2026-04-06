@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekend Build Log - Apr 4-7, 2026 | Online Optimisers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f8f9fc;
+  --surface: #ffffff;
+  --surface-alt: #f1f3f9;
+  --border: #e2e6ef;
+  --border-light: #edf0f7;
+  --text: #1a1d2e;
+  --text-secondary: #5a6178;
+  --text-muted: #8b91a8;
+  --accent: #2563eb;
+  --accent-light: #e8f0fe;
+  --accent-glow: rgba(37, 99, 235, 0.08);
+  --green: #059669;
+  --green-bg: #ecfdf5;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---- HERO ---- */
+.hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+  padding: 60px 0 48px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero .container { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+.hero-badge svg { width: 14px; height: 14px; }
+.hero h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.hero p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.75);
+  font-weight: 400;
+  max-width: 600px;
+}
+
+/* ---- STATS BAR ---- */
+.stats-bar {
+  margin-top: -36px;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 12px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.stat-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ---- SECTIONS ---- */
+.section {
+  padding: 40px 0 0;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section-icon svg { width: 20px; height: 20px; }
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.section-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ---- CARDS ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: var(--shadow-md); }
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.card ul {
+  list-style: none;
+  padding: 0;
+}
+.card li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+.card li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-live { background: var(--green-bg); color: var(--green); }
+.badge-built { background: var(--accent-light); color: var(--accent); }
+.badge-next { background: var(--surface-alt); color: var(--text-muted); }
+.badge-progress { background: var(--amber-bg); color: var(--amber); }
+.badge-red { background: var(--red-bg); color: var(--red); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+.badge-green { background: var(--green-bg); color: var(--green); }
+
+/* ---- AUDIT TABLE ---- */
+.audit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+}
+.audit-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.2s;
+}
+.audit-item:hover { box-shadow: var(--shadow-md); }
+.audit-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.audit-detail {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.audit-score {
+  font-size: 18px;
+  font-weight: 800;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ---- AUTOMATION TABLE ---- */
+.auto-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.auto-table th {
+  background: var(--surface-alt);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.auto-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+.auto-table tr:last-child td { border-bottom: none; }
+.auto-table tr:hover td { background: var(--accent-glow); }
+.auto-table .name { font-weight: 600; color: var(--text); }
+.auto-table .cost {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ---- SKILL CARDS ---- */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.skill-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.skill-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.skill-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.skill-cost {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---- PARKED LIST ---- */
+.parked-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.parked-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.parked-item .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.parked-item .reason {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ---- WEBSITE SHOWCASE ---- */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.showcase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.showcase-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+.showcase-banner {
+  height: 8px;
+  background: linear-gradient(90deg, var(--accent), #3b82f6);
+}
+.showcase-banner.green { background: linear-gradient(90deg, #059669, #34d399); }
+.showcase-banner.purple { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.showcase-body {
+  padding: 20px;
+}
+.showcase-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.showcase-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.showcase-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.showcase-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.showcase-stat {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.showcase-stat strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ---- FOOTER ---- */
+.footer {
+  margin-top: 48px;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.footer-brand {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---- DIVIDER ---- */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+/* ---- PIPELINE SECTION ---- */
+.pipeline-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+.pipeline-step {
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pipeline-arrow {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .hero { padding: 40px 0 36px; }
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .audit-grid,
+  .skill-grid,
+  .showcase-grid { grid-template-columns: 1fr; }
+  .auto-table { font-size: 13px; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      60-Hour Build Sprint
+    </div>
+    <h1>Weekend Build Log</h1>
+    <p>Friday Apr 4 to Monday Apr 7, 2026 - everything shipped, built, or deployed across all sessions.</p>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">32</div>
+        <div class="stat-label">Commits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">3</div>
+        <div class="stat-label">Websites Built</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Audit Decks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">8</div>
+        <div class="stat-label">New Skills</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">215</div>
+        <div class="stat-label">Leads Scanned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">11,597</div>
+        <div class="stat-label">Directory Pages</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">20</div>
+        <div class="stat-label">Automations Mapped</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$0.38</div>
+        <div class="stat-label">API Cost for 11K Pages</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- WEBSITES -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--purple-bg);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <div>
+      <div class="section-title">Websites Built and Launched</div>
+      <div class="section-subtitle">3 full websites shipped this weekend</div>
+    </div>
+  </div>
+
+  <div class="showcase-grid">
+    <div class="showcase-card">
+      <div class="showcase-banner green"></div>
+      <div class="showcase-body">
+        <div class="showcase-tag">Niche Directory - Astro 6</div>
+        <div class="showcase-title">TopRoofers.com</div>
+        <div class="showcase-desc">Full roofing contractor directory built from scratch. 192 US cities, all 50 states. Interactive cost estimator, Leaflet.js maps, quote forms, 10 blog articles, full JSON-LD schema, claim-your-listing page.</div>
+        <div class="showcase-stats">
+          <div class="showcase-stat"><strong>11,597</strong> pages</div>
+          <div class="showcase-stat"><strong>11,344</strong> listings</div>
+          <div class="showcase-stat"><strong>2,143</strong> no-website leads</div>
+          <div class="showcase-stat"><strong>$0.38</strong> API cost</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-banner"></div>
+      <div class="showcase-body">
+        <div class="showcase-tag">Commission Deal - Astro 6</div>
+        <div class="showcase-title">Safe4USA Security</div>
+        <div class="showcase-desc">16-page Astro website (7 service pages, 3 location pages) + full AI audit (8/100) + commission deal package + 4 strategy docs as styled HTML + Thonty briefing.</div>
+        <div class="showcase-stats">
+          <div class="showcase-stat"><strong>16</strong> pages</div>
+          <div class="showcase-stat"><strong>4</strong> strategy docs</div>
+          <div class="showcase-stat"><strong>Rev share</strong> model</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-card">
+      <div class="showcase-banner purple"></div>
+      <div class="showcase-body">
+        <div class="showcase-tag">Agency Site - Cloudflare Pages</div>
+        <div class="showcase-title">OnlineOptimisers.net</div>
+        <div class="showcase-desc">Agency website live on Cloudflare Pages. 4 pages with team cards, SSL fix, nameserver migration. Astro + EmDash CMS conversion scaffolded and parked.</div>
+        <div class="showcase-stats">
+          <div class="showcase-stat"><strong>4</strong> pages live</div>
+          <div class="showcase-stat"><strong>SSL</strong> fixed</div>
+          <div class="showcase-stat"><strong>CF Pages</strong> deployed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIT DECKS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--green-bg);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+    </div>
+    <div>
+      <div class="section-title">Audit Decks Generated</div>
+      <div class="section-subtitle">10 new decks across 2 batches, all live on GitHub Pages</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Batch 3</div>
+  <div class="audit-grid" style="margin-bottom: 16px;">
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">FSAP Care</div>
+        <div class="audit-detail">Pain Management - Venice, FL</div>
+      </div>
+      <div class="audit-score" style="color: var(--green);">70</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Cotteswold House</div>
+        <div class="audit-detail">Dentist - Gloucester, UK</div>
+      </div>
+      <div class="audit-score" style="color: var(--amber);">56</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Ne-Plus Ultra</div>
+        <div class="audit-detail">Chiropractic - Pasadena, CA</div>
+      </div>
+      <div class="audit-score" style="color: var(--red);">15</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Tulare Family Dentistry</div>
+        <div class="audit-detail">Dentist - Tulare, CA</div>
+      </div>
+      <div class="audit-score" style="color: var(--green);">65</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">CorePhase</div>
+        <div class="audit-detail">PMC / B2B - Houston, TX</div>
+      </div>
+      <div class="audit-score" style="color: var(--red);">8</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Batch 4</div>
+  <div class="audit-grid" style="margin-bottom: 16px;">
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">TIDI Construction</div>
+        <div class="audit-detail">Remodeling - Seattle / Portland</div>
+      </div>
+      <div class="audit-score" style="color: var(--red);">13</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">CBRE Dallas-Fort Worth</div>
+        <div class="audit-detail">Commercial RE - Dallas, TX</div>
+      </div>
+      <div class="audit-score" style="color: var(--green);">68</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Express Sunrooms</div>
+        <div class="audit-detail">Sunrooms - Charlotte, NC</div>
+      </div>
+      <div class="audit-score" style="color: var(--amber);">48</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Dalia Forman Design</div>
+        <div class="audit-detail">Interior Design - No location listed</div>
+      </div>
+      <div class="audit-score" style="color: var(--red);">11</div>
+    </div>
+    <div class="audit-item">
+      <div>
+        <div class="audit-name">Dorscheid Brothers</div>
+        <div class="audit-detail">Oilfield - Grande Prairie, AB</div>
+      </div>
+      <div class="audit-score" style="color: var(--red);">8</div>
+    </div>
+  </div>
+
+  <div class="card" style="background: var(--surface-alt); border-style: dashed;">
+    <div class="card-title" style="font-size: 14px;">Tomas Feedback Applied Across All Batches</div>
+    <ul>
+      <li>CTA buttons centered on all slides</li>
+      <li>Framework slide: 8+ clients shown at #1 (was 3)</li>
+      <li>Softer wording on "only thing missing" section</li>
+      <li>AI framed as one advantage, not the only thing holding them back</li>
+    </ul>
+  </div>
+</div>
+
+<!-- VSL PIPELINE -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--red-bg);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </div>
+    <div>
+      <div class="section-title">VSL + Outreach Pipeline</div>
+      <div class="section-subtitle">Voice clone, avatar, website template, batch processor, 215 leads enriched</div>
+    </div>
+  </div>
+
+  <div class="pipeline-flow">
+    <span class="pipeline-step">LinkedIn Leads</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Website Scan (215)</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Maps + AI Check</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Lead Rating A-F</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Build Website</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Generate VSL</span>
+    <span class="pipeline-arrow">&rarr;</span>
+    <span class="pipeline-step">Send via Instantly</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Voice Clone + Avatar</div>
+    <ul>
+      <li><strong>ElevenLabs PVC</strong> locked - 5 versions tested, 31 min clean recording as training data</li>
+      <li><strong>HeyGen avatar</strong> created - standing + seated variants, green screen compositing working</li>
+      <li><strong>8 VSL versions</strong> tested (v1-v8), all on GitHub Pages</li>
+      <li><strong>Batch processor</strong> built - reads 58 leads, generates personalised scripts</li>
+      <li><strong>Email templates</strong> - cold outreach + reply follow-up</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Lead Intelligence (215 Leads)</div>
+    <ul>
+      <li><strong>Bulk website scanner</strong> - SSL, mobile, meta tags, schema, noindex, domain rank, backlinks</li>
+      <li><strong>Google Maps check</strong> - 23 have no GMB listing (39%)</li>
+      <li><strong>AI visibility check</strong> - 57 have zero AI presence (97%)</li>
+      <li><strong>Golden Leads tab</strong> - 20 leads with NO Maps AND NO AI citations</li>
+      <li><strong>Lead ratings</strong> - A-F scale, 13 RED / 27 AMBER / 19 GREEN</li>
+      <li><strong>Insights dashboard</strong> + glossary for all 36 columns</li>
+    </ul>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Option A: Website + Avatar</div>
+      <div style="font-size: 32px; font-weight: 800; color: var(--accent);">$2.15</div>
+      <div style="font-size: 13px; color: var(--text-muted);">per lead</div>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Option B: Voice Only</div>
+      <div style="font-size: 32px; font-weight: 800; color: var(--green);">$0.11</div>
+      <div style="font-size: 13px; color: var(--text-muted);">per lead</div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW SKILLS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--accent-light);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="section-title">8 New Skills Built</div>
+      <div class="section-subtitle">6 from Mudi's recommendations + /full-audit + /lead-brief</div>
+    </div>
+  </div>
+
+  <div class="skill-grid">
+    <div class="skill-card">
+      <div class="skill-name">/client-health</div>
+      <div class="skill-desc">Ranking + backlink monitoring with alert thresholds. Detect drops before clients notice.</div>
+      <div class="skill-cost">~$0.03-0.05/run</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/internal-links</div>
+      <div class="skill-desc">Crawl site, build topic map, suggest and insert internal links. High SEO impact, low effort.</div>
+      <div class="skill-cost">$0 for Falc sites</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/content-update</div>
+      <div class="skill-desc">Find declining pages via DataForSEO, compare vs SERP winners, generate updated content.</div>
+      <div class="skill-cost">~$0.02-0.10/run</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/report-deliver</div>
+      <div class="skill-desc">Batch monthly report + email for all 9 clients. Scheduled 5th of each month.</div>
+      <div class="skill-cost">~$0.15-0.80/client</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/content-brief</div>
+      <div class="skill-desc">Full SEO content brief for any keyword with optional WordPress REST API push.</div>
+      <div class="skill-cost">~$0.02-0.05/brief</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/keyword-cluster</div>
+      <div class="skill-desc">Cluster ranked keywords by intent, flag quick wins at positions 4-15.</div>
+      <div class="skill-cost">~$0.01-0.03/run</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/full-audit</div>
+      <div class="skill-desc">13-section deep audit with expert insights. Upgraded from /quick-audit.</div>
+      <div class="skill-cost">~$0.60-0.80/run</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">/lead-brief</div>
+      <div class="skill-desc">Lead qualification + enrichment. Pulls website, Maps, AI visibility in one pass.</div>
+      <div class="skill-cost">~$0.01-0.03/lead</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOP 20 AUTOMATIONS -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--amber-bg);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+    </div>
+    <div>
+      <div class="section-title">Top 20 Automation Master List</div>
+      <div class="section-subtitle">6 LIVE + 5 BUILT + 1 IN PROGRESS + 8 NEXT</div>
+    </div>
+  </div>
+
+  <table class="auto-table">
+    <thead>
+      <tr><th>#</th><th>Automation</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td class="name">Audit Deck Pipeline</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>2</td><td class="name">Lead List Builder</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>3</td><td class="name">Monthly Report Data Pull</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>4</td><td class="name">Instantly Reply Relay</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>5</td><td class="name">VSL Pipeline</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>6</td><td class="name">Presentation Deck Builder</td><td><span class="badge badge-live">LIVE</span></td></tr>
+      <tr><td>7</td><td class="name">Content Update Automation</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>8</td><td class="name">Client Health Monitoring + Alerts</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>9</td><td class="name">Automated Weekly/Monthly Reporting</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>10</td><td class="name">Content Brief + WP Push</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>11</td><td class="name">SEO Draft Writing System</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>12</td><td class="name">Cold Email Personalisation Engine</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>13</td><td class="name">Keyword Clustering + Quick-Win Finder</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>14</td><td class="name">Internal Linking Automation</td><td><span class="badge badge-built">BUILT</span></td></tr>
+      <tr><td>15</td><td class="name">Upsell Trigger System</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>16</td><td class="name">Competitor Tracking</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>17</td><td class="name">Technical SEO Monitoring</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>18</td><td class="name">Backlink Opportunity Finder</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>19</td><td class="name">Client Comms Assistant</td><td><span class="badge badge-next">NEXT</span></td></tr>
+      <tr><td>20</td><td class="name">Onboarding Automation</td><td><span class="badge badge-progress">IN PROGRESS</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- INFRASTRUCTURE -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--surface-alt);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#5a6178" stroke-width="2"><path d="M4 14a1 1 0 011-1h14a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1v-5z"/><path d="M4 4a1 1 0 011-1h14a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/><circle cx="8" cy="7" r="1" fill="#5a6178"/><circle cx="8" cy="17" r="1" fill="#5a6178"/></svg>
+    </div>
+    <div>
+      <div class="section-title">Infrastructure + Housekeeping</div>
+      <div class="section-subtitle">APIs, data pulls, dashboard upgrades, and context preservation</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
+    <div class="card">
+      <div class="card-title">APIs Connected (4/14)</div>
+      <ul>
+        <li><strong>Airtable</strong> - personal access token, all CRUD</li>
+        <li><strong>Asana</strong> - personal access token</li>
+        <li><strong>Apollo</strong> - master key, 100 credits/month</li>
+        <li><strong>GoHighLevel</strong> - v2 API private integration</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Automation Upgrades</div>
+      <ul>
+        <li><strong>Audit Deck Pipeline</strong> - all values now dynamic, KILLER_HOOK + STRENGTHS_REFRAME added</li>
+        <li><strong>Monthly Data Pull</strong> - deployed to n8n Cloud (14 nodes)</li>
+        <li><strong>Automation Dashboard</strong> - info buttons, pipeline section, Mudi picks</li>
+        <li><strong>Lead List Builder</strong> - end-to-end tested ($0.35/lead)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Google Drive Deep Dive</div>
+      <ul>
+        <li><strong>500+ files</strong> read across all client folders</li>
+        <li><strong>Client History Master</strong> - 1,139 lines, 34 entries</li>
+        <li>All 9 client seo-status.md files updated</li>
+        <li>Key: Bobcat star performer, Moving Pro 77% drop, 3 clients missing GSC/GA</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monthly Report v2</div>
+      <ul>
+        <li>Redesigned: 11 sections down to 6</li>
+        <li>Plain English callouts instead of jargon</li>
+        <li>Elite Movers test with real heatmap data</li>
+        <li>Google API consolidation plan for all 9 clients</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Prospect Close Packages</div>
+      <ul>
+        <li><strong>Handyman Superior</strong> - free build + ads test + Thonty briefing v2</li>
+        <li><strong>Safe4USA</strong> - commission deal + audit + website + strategy docs</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Housekeeping</div>
+      <ul>
+        <li>.gitignore cleanup (node_modules, .wrangler)</li>
+        <li>Data fixes: Dorscheid + FSAP Care</li>
+        <li>/park skill upgraded to full save-and-shutdown</li>
+        <li>parked.md system created for context preservation</li>
+        <li>VSL pricing table rewritten</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- PARKED -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-icon" style="background: var(--amber-bg);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+    </div>
+    <div>
+      <div class="section-title">10 Builds Parked with Full Context</div>
+      <div class="section-subtitle">Each has a pick-up prompt in parked.md - ready to resume any time</div>
+    </div>
+  </div>
+
+  <div class="parked-grid">
+    <div class="parked-item"><div class="name">OO Website - Astro + CMS</div><div class="reason">Form backend + CMS conversion pending</div></div>
+    <div class="parked-item"><div class="name">Mudi Skills QA</div><div class="reason">6 skills need live QA pass</div></div>
+    <div class="parked-item"><div class="name">TopRoofers Deploy</div><div class="reason">Cloudflare key expired</div></div>
+    <div class="parked-item"><div class="name">API Credential Sprint</div><div class="reason">10 APIs remaining</div></div>
+    <div class="parked-item"><div class="name">Drive Deep Dive</div><div class="reason">Voice dump pending</div></div>
+    <div class="parked-item"><div class="name">Monthly Report v2</div><div class="reason">Design review + OAuth needed</div></div>
+    <div class="parked-item"><div class="name">Lead List Builder</div><div class="reason">Improvements identified</div></div>
+    <div class="parked-item"><div class="name">Audit Deck Automation</div><div class="reason">Competitor data quality fix</div></div>
+    <div class="parked-item"><div class="name">VSL Pipeline</div><div class="reason">Dashboard link + polish</div></div>
+    <div class="parked-item"><div class="name">Monthly Data Pull</div><div class="reason">Google OAuth setup needed</div></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="container">
+    <div class="footer-text">
+      <span class="footer-brand">Online Optimisers</span> &middot; Weekend Build Sprint Apr 4-7, 2026 &middot; 32 commits in 60 hours
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
